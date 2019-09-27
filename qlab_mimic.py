@@ -24,10 +24,18 @@
 
 import logging
 
+# pylint: disable=no-name-in-module
+from liblo import ServerThread, ServerError, TCP
+
 # pylint: disable=import-error
 from lisp.core.plugin import Plugin
+from lisp.core.util import get_lan_ip
+from lisp.plugins.osc.osc_server import OscServer
+from lisp.ui.ui_utils import translate
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
+
+QLAB_TCP_PORT = 53000
 
 class QlabMimic(Plugin):
     """LiSP pretends to be QLab for the purposes of basic OSC control"""
@@ -39,3 +47,52 @@ class QlabMimic(Plugin):
 
     def __init__(self, app):
         super().__init__(app)
+
+        self._server = OscTcpServer(
+            get_lan_ip(), QLAB_TCP_PORT, QLAB_TCP_PORT
+        )
+        self._server.start()
+
+    @property
+    def server(self):
+        return self._server
+
+    def terminate(self):
+        self._server.stop()
+
+    def finalize(self):
+        logger.debug('Shutting down QLab server')
+        self.terminate()
+
+class OscTcpServer(OscServer):
+    '''OSC Server that works on TCP instead of the default UDP
+
+    The one and only method is a clone of the one in OscServer, but
+    modified to use the TCP connection protocol instead of the default
+    UDP.
+
+    @todo: Create and submit PR upstream to LiSP to allow specifying protocol in OscServer
+    '''
+
+    # pylint: disable=invalid-name, no-member, access-member-before-definition, attribute-defined-outside-init
+    def start(self):
+        '''Clone of the function in OscServer, but set to establish a TCP connection'''
+        if self._OscServer__running:
+            return
+
+        try:
+            self._OscServer__srv = ServerThread(self._OscServer__in_port, TCP)
+            self._OscServer__srv.add_method(None, None, self.new_message.emit)
+            self._OscServer__srv.start()
+
+            self._OscServer__running = True
+
+            logger.info(
+                translate("OscServerInfo", "OSC server started at {}").format(
+                    self._OscServer__srv.url
+                )
+            )
+        except ServerError:
+            logger.exception(
+                translate("OscServerError", "Cannot start OSC sever")
+            )

@@ -22,6 +22,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Linux Show Player.  If not, see <http://www.gnu.org/licenses/>.
 
+from json import JSONEncoder
 import logging
 
 # pylint: disable=no-name-in-module
@@ -37,6 +38,8 @@ from .osc_tcp_server import OscTcpServer
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
 QLAB_TCP_PORT = 53000
+QLAB_STATUS_OK = 'ok'
+QLAB_STATUS_NOT_OK = 'error'
 
 class QlabMimic(Plugin):
     """LiSP pretends to be QLab for the purposes of basic OSC control"""
@@ -49,8 +52,11 @@ class QlabMimic(Plugin):
     def __init__(self, app):
         super().__init__(app)
 
+        self._encoder = JSONEncoder(separators=(',', ':'))
+
         self._server = OscTcpServer(QLAB_TCP_PORT)
         self._server.start()
+        self._server.new_message.connect(self.response_handler)
 
     @property
     def server(self):
@@ -63,3 +69,20 @@ class QlabMimic(Plugin):
         logger.debug('Shutting down QLab server')
         self.terminate()
 
+    def response_handler(self, path, args, types, src, user_data):
+        src.set_slip_enabled(True)
+        response = {
+            'address': path,
+            'status': QLAB_STATUS_OK,
+            'data': self.response_workspaces(),
+        }
+        response = self._encoder.encode(response)
+        self._server.send(src, '/reply' + path, response)
+
+    def response_workspaces(self):
+        return [{
+            'uniqueID': 'lisp_workspace',
+            'displayName': 'LiSP Showfile',
+            'hasPasscode': 0,
+            'version': '0.1',
+        }]

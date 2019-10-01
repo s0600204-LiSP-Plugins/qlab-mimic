@@ -55,6 +55,7 @@ class QlabMimic(Plugin):
 
         self._session_name = None
         self._session_uuid = None
+        self._connected_clients = {}
 
         self._encoder = JSONEncoder(separators=(',', ':'))
 
@@ -108,8 +109,11 @@ class QlabMimic(Plugin):
         response['workspace_id'] = self._session_uuid
 
         handler_map = {
+            'connect': self._handler_connection,
+            'disconnect': self._handler_connection,
+            'updates': self._handler_connection,
         }
-        status, data = handler_map.get(path[0], lambda *_: (QLAB_STATUS_NOT_OK, None))(path, args)
+        status, data = handler_map.get(path[0], lambda **_: (QLAB_STATUS_NOT_OK, None))(path=path, args=args, src=src)
 
         if status is QLAB_STATUS_OK and data is not None:
             response['data'] = data
@@ -129,3 +133,22 @@ class QlabMimic(Plugin):
                 'version': '0.1',
             }],
         )
+
+    def _handler_connection(self, *, src, path, args, **_):
+        client_id = "{}:{}".format(src.hostname, src.port)
+
+        if path[0] == 'connect':
+            if client_id not in self._connected_clients:
+                self._connected_clients[client_id] = [src, False]
+            return (QLAB_STATUS_OK, "ok")
+
+        if path[0] == 'disconnect':
+            if client_id in self._connected_clients:
+                del self._connected_clients[client_id]
+            return (QLAB_STATUS_OK, None)
+
+        if path[0] == 'updates':
+            if client_id not in self._connected_clients:
+                return (QLAB_STATUS_NOT_OK, None)
+            self._connected_clients[client_id][1] = bool(args[0])
+            return (QLAB_STATUS_OK, None)

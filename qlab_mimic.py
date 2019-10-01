@@ -77,20 +77,55 @@ class QlabMimic(Plugin):
         logger.debug('Shutting down QLab server')
         self.terminate()
 
+    def send(self, src, path, status, data):
+        data['status'] = status
+        data = self._encoder.encode(data)
+        self._server.send(src, path, data)
+
     def response_handler(self, path, args, types, src, user_data):
         src.set_slip_enabled(True)
         response = {
             'address': path,
-            'status': QLAB_STATUS_OK,
-            'data': self.response_workspaces(),
         }
-        response = self._encoder.encode(response)
-        self._server.send(src, '/reply' + path, response)
+        reply_path = '/reply' + path
+        path = path.split('/')
+        path.pop(0)
 
-    def response_workspaces(self):
-        return [{
-            'uniqueID': self._session_uuid,
-            'displayName': self._session_name,
-            'hasPasscode': 0,
-            'version': '0.1',
-        }]
+        if path[0] == 'workspaces':
+            status, data = self._handler_workspaces()
+            if status is QLAB_STATUS_OK:
+                response['data'] = data
+            self.send(src, reply_path, status, response)
+            return
+
+        if path[0] == 'workspace':
+            # If wrong workspace
+            if path[1] != self._session_uuid and path[1] != self._session_name:
+                self.send(src, reply_path, QLAB_STATUS_NOT_OK, response)
+                return
+            del path[0:2]
+
+        response['workspace_id'] = self._session_uuid
+
+        handler_map = {
+        }
+        status, data = handler_map.get(path[0], lambda *_: (QLAB_STATUS_NOT_OK, None))(path, args)
+
+        if status is QLAB_STATUS_OK and data is not None:
+            response['data'] = data
+
+        self.send(src, reply_path, status, response)
+
+    def _handler_workspaces(self):
+        if not self._session_uuid:
+            return (QLAB_STATUS_NOT_OK, None)
+
+        return (
+            QLAB_STATUS_OK,
+            [{
+                'uniqueID': self._session_uuid,
+                'displayName': self._session_name,
+                'hasPasscode': 0,
+                'version': '0.1',
+            }],
+        )

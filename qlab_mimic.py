@@ -24,6 +24,7 @@
 
 from json import JSONEncoder
 import logging
+from uuid import uuid4
 
 # pylint: disable=no-name-in-module
 from liblo import ServerThread, ServerError, TCP
@@ -52,11 +53,18 @@ class QlabMimic(Plugin):
     def __init__(self, app):
         super().__init__(app)
 
+        self._session_name = None
+        self._session_uuid = None
+
         self._encoder = JSONEncoder(separators=(',', ':'))
 
         self._server = OscTcpServer(QLAB_TCP_PORT)
         self._server.start()
         self._server.new_message.connect(self.response_handler)
+
+    def _on_session_initialised(self, session):
+        self._session_name = session.name()
+        self._session_uuid = str(uuid4())
 
     @property
     def server(self):
@@ -81,8 +89,8 @@ class QlabMimic(Plugin):
 
     def response_workspaces(self):
         return [{
-            'uniqueID': 'lisp_workspace',
-            'displayName': 'LiSP Showfile',
+            'uniqueID': self._session_uuid,
+            'displayName': self._session_name,
             'hasPasscode': 0,
             'version': '0.1',
         }]

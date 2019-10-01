@@ -110,6 +110,7 @@ class QlabMimic(Plugin):
 
         handler_map = {
             'connect': self._handler_connection,
+            'cueLists': self._handler_cuelists,
             'disconnect': self._handler_connection,
             'updates': self._handler_connection,
         }
@@ -152,3 +153,18 @@ class QlabMimic(Plugin):
                 return (QLAB_STATUS_NOT_OK, None)
             self._connected_clients[client_id][1] = bool(args[0])
             return (QLAB_STATUS_OK, None)
+
+    def _handler_cuelists(self, *, path, args, **_):
+        cues = []
+        for cue_id, cue in self.app.cue_model.items():
+            cues.append({
+                'uniqueID': cue_id, # string
+                'number': cue.index, # string
+                'name': cue.name, # string
+                'listName': 'Main Cue List', # string
+                'type': 'Audio', # string
+                'colorName': 'none', # string
+                'flagged': 0, # number
+                'armed': 1, # number
+            })
+        return (QLAB_STATUS_OK, cues)

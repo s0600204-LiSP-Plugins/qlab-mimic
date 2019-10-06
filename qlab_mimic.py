@@ -89,6 +89,7 @@ class QlabMimic(Plugin):
             'address': path,
         }
         reply_path = '/reply' + path
+        status = None
         path = path.split('/')
         path.pop(0)
 
@@ -104,17 +105,30 @@ class QlabMimic(Plugin):
             if path[1] != self._session_uuid and path[1] != self._session_name:
                 self.send(src, reply_path, QLAB_STATUS_NOT_OK, response)
                 return
-            del path[0:2]
 
         response['workspace_id'] = self._session_uuid
 
-        handler_map = {
-            'connect': self._handler_connection,
-            'cueLists': self._handler_cuelists,
-            'disconnect': self._handler_connection,
-            'updates': self._handler_connection,
-        }
-        status, data = handler_map.get(path[0], lambda **_: (QLAB_STATUS_NOT_OK, None))(path=path, args=args, src=src)
+        if path[0] == 'workspace':
+            del path[0:2]
+
+            status, data = {
+                'connect': self._handler_connection,
+                'disconnect': self._handler_connection,
+                'updates': self._handler_connection,
+            }.get(
+                path[0], lambda **_: (None, None)
+            )(
+                path=path, args=args, src=src
+            )
+
+        if status is None:
+            status, data = {
+                'cueLists': self._handler_cuelists,
+            }.get(
+                path[0], lambda **_: (QLAB_STATUS_NOT_OK, None)
+            )(
+                path=path, args=args
+            )
 
         if status is QLAB_STATUS_OK and data is not None:
             response['data'] = data

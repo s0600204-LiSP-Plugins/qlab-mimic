@@ -114,6 +114,7 @@ class QlabMimic(Plugin):
             status, data = {
                 'connect': self._handler_connection,
                 'disconnect': self._handler_connection,
+                'thump': lambda **_: (QLAB_STATUS_OK, 'thump'),
                 'updates': self._handler_connection,
             }.get(
                 path[0], lambda **_: (None, None)

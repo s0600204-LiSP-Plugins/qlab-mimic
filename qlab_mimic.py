@@ -60,6 +60,7 @@ class QlabMimic(Plugin):
         self._encoder = JSONEncoder(separators=(',', ':'))
 
         self._server = OscTcpServer(QLAB_TCP_PORT)
+        self._server.register_method(self._handle_workspaces, '/workspaces')
         self._server.start()
         self._server.new_message.connect(self.response_handler)
 
@@ -106,13 +107,6 @@ class QlabMimic(Plugin):
         path = path.split('/')
         path.pop(0)
 
-        if path[0] == 'workspaces':
-            status, data = self._handler_workspaces()
-            if status is QLAB_STATUS_OK:
-                response['data'] = data
-            self.send(src, reply_path, status, response)
-            return
-
         if path[0] == 'workspace':
             # If wrong workspace
             if path[1] != self._session_uuid and path[1] != self._session_name:
@@ -149,19 +143,19 @@ class QlabMimic(Plugin):
 
         self.send(src, reply_path, status, response)
 
-    def _handler_workspaces(self):
+    def _handle_workspaces(self, path, args, types, src, user_data):
         if not self._session_uuid:
-            return (QLAB_STATUS_NOT_OK, None)
+            self._send_reply(src, path, QLAB_STATUS_NOT_OK, send_id=False)
+            return
 
-        return (
-            QLAB_STATUS_OK,
-            [{
-                'uniqueID': self._session_uuid,
-                'displayName': self._session_name,
-                'hasPasscode': 0,
-                'version': '0.1',
-            }],
-        )
+        workspaces = [{
+            'uniqueID': self._session_uuid,
+            'displayName': self._session_name,
+            'hasPasscode': 0,
+            'version': '0.1',
+        }]
+
+        self.send_reply(src, path, QLAB_STATUS_OK, workspaces, send_id=False)
 
     def _handler_connection(self, *, src, path, args, **_):
         client_id = "{}:{}".format(src.hostname, src.port)

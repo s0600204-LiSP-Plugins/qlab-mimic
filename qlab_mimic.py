@@ -34,6 +34,7 @@ from lisp.core.plugin import Plugin
 from lisp.core.util import get_lan_ip
 from lisp.ui.ui_utils import translate
 
+from .cues_handler import CuesHandler
 from .osc_tcp_server import OscTcpServer
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
@@ -59,6 +60,8 @@ class QlabMimic(Plugin):
 
         self._encoder = JSONEncoder(separators=(',', ':'))
 
+        self._cues_message_handler = CuesHandler()
+
         self._server = OscTcpServer(QLAB_TCP_PORT)
         self._server.register_method(self._handle_workspaces, '/workspaces')
         self._server.start()
@@ -67,6 +70,8 @@ class QlabMimic(Plugin):
     def _on_session_initialised(self, session):
         self._session_name = session.name()
         self._session_uuid = str(uuid4())
+
+        self._cues_message_handler.register_cuelists(self.app.layout)
 
     @property
     def server(self):
@@ -141,18 +146,8 @@ class QlabMimic(Plugin):
             return
 
     def _handle_cuelists(self, path, args, types, src, user_data):
-         cues = [{
-            'uniqueID': self._session_uuid, # string
-            'number': '-1', # string
-            'name': 'Alpha', # string
-            'listName': 'Beta', # string
-            'type': 'cuelist', # string
-            'colorName': 'none', # string
-            'flagged': 0, # number
-            'armed': 1, # number
-            'cues': []
-         }]
-         self.send_reply(src, path, QLAB_STATUS_OK, cues)
+         cuelists = self._cues_message_handler.get_cuelists()
+         self.send_reply(src, path, QLAB_STATUS_OK, cuelists)
 
     def _handle_thump(self, path, args, types, src, user_data):
         self.send_reply(src, path, QLAB_STATUS_OK, 'thump')

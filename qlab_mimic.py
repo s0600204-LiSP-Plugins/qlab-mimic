@@ -83,6 +83,19 @@ class QlabMimic(Plugin):
         data = self._encoder.encode(data)
         self._server.send(src, path, data)
 
+    def send_reply(self, src, path, status, data=None, send_id=True):
+        src.set_slip_enabled(True)
+        response = {
+            'address': path,
+            'status': status,
+        }
+        if send_id and self._session_uuid:
+            response['workspace_id'] = self._session_uuid
+        if status is QLAB_STATUS_OK and data is not None:
+            response['data'] = data
+        response = self._encoder.encode(response)
+        self._server.send(src, '/reply' + path, response)
+
     def response_handler(self, path, args, types, src, user_data):
         src.set_slip_enabled(True)
         response = {

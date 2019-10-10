@@ -40,6 +40,7 @@ class OscTcpServer:
         self._srv = None
         self._running = False
         self._lock = Lock()
+        self._methods = []
 
         self.new_message = Signal()
 
@@ -64,12 +65,17 @@ class OscTcpServer:
     def is_running(self):
         return self._running
 
+    def register_method(self, callback, path=None, types=None):
+        self._methods.append((callback, path, types))
+
     def start(self):
         if self._running:
             return
 
         try:
             self._srv = ServerThread(self._port, TCP)
+            for method in self._methods:
+                self._srv.add_method(method[1], method[2], method[0])
             self._srv.add_method(None, None, self.new_message.emit, self._srv)
             self._srv.start()
             

@@ -114,47 +114,6 @@ class QlabMimic(Plugin):
             original_path, args, types, src, user_data
         )
 
-    def _handle_workspace(self, original_path, args, types, src, user_data):
-        path = split_path(original_path)
-
-         # If wrong workspace
-        if path[1] != self._session_uuid and path[1] != self._session_name:
-            self.send_reply(src, original_path, QLAB_STATUS_NOT_OK, send_id=False)
-            return
-        del path[0:2]
-
-        handlers = {
-            'connect': self._handle_connection,
-            'cueLists': self._handle_cuelists,
-            'disconnect': self._handle_connection,
-            'thump': self._handle_thump,
-            'updates': self._handle_connection,
-        }
-
-        if path[0] not in handlers:
-            self.send_reply(src, original_path, QLAB_STATUS_NOT_OK)
-            return
-
-        handlers.get(
-            path[0], lambda *_: None
-        )(
-            original_path, args, types, src, user_data
-        )
-
-    def _handle_workspaces(self, path, args, types, src, user_data):
-        if not self._session_uuid:
-            self._send_reply(src, path, QLAB_STATUS_NOT_OK, send_id=False)
-            return
-
-        workspaces = [{
-            'uniqueID': self._session_uuid,
-            'displayName': self._session_name,
-            'hasPasscode': 0,
-            'version': '0.1',
-        }]
-
-        self.send_reply(src, path, QLAB_STATUS_OK, workspaces, send_id=False)
-
     def _handle_connection(self, original_path, args, types, src, user_data):
         path = split_path(original_path)
         client_id = "{}:{}".format(src.hostname, src.port)
@@ -197,6 +156,47 @@ class QlabMimic(Plugin):
 
     def _handle_thump(self, path, args, types, src, user_data):
         self.send_reply(src, path, QLAB_STATUS_OK, 'thump')
+
+    def _handle_workspace(self, original_path, args, types, src, user_data):
+        path = split_path(original_path)
+
+         # If wrong workspace
+        if path[1] != self._session_uuid and path[1] != self._session_name:
+            self.send_reply(src, original_path, QLAB_STATUS_NOT_OK, send_id=False)
+            return
+        del path[0:2]
+
+        handlers = {
+            'connect': self._handle_connection,
+            'cueLists': self._handle_cuelists,
+            'disconnect': self._handle_connection,
+            'thump': self._handle_thump,
+            'updates': self._handle_connection,
+        }
+
+        if path[0] not in handlers:
+            self.send_reply(src, original_path, QLAB_STATUS_NOT_OK)
+            return
+
+        handlers.get(
+            path[0], lambda *_: None
+        )(
+            original_path, args, types, src, user_data
+        )
+
+    def _handle_workspaces(self, path, args, types, src, user_data):
+        if not self._session_uuid:
+            self.send_reply(src, path, QLAB_STATUS_NOT_OK, send_id=False)
+            return
+
+        workspaces = [{
+            'uniqueID': self._session_uuid,
+            'displayName': self._session_name,
+            'hasPasscode': 0,
+            'version': '0.1',
+        }]
+
+        self.send_reply(src, path, QLAB_STATUS_OK, workspaces, send_id=False)
 
 def split_path(path):
     path = path.split('/')

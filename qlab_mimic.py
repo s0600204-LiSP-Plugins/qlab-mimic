@@ -83,11 +83,6 @@ class QlabMimic(Plugin):
         logger.debug('Shutting down QLab server')
         self.terminate()
 
-    def send(self, src, path, status, data):
-        data['status'] = status
-        data = self._encoder.encode(data)
-        self._server.send(src, path, data)
-
     def send_reply(self, src, path, status, data=None, send_id=True):
         src.set_slip_enabled(True)
         response = {

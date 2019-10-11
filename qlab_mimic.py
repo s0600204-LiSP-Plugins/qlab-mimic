@@ -105,6 +105,8 @@ class QlabMimic(Plugin):
         path = split_path(original_path)
 
         handlers = {
+            'disconnect': self._handle_connection,
+            'updates': self._handle_connection,
             'workspace': self._handle_workspace,
         }
 
@@ -120,15 +122,17 @@ class QlabMimic(Plugin):
 
     def _handle_connection(self, original_path, args, types, src, user_data):
         path = split_path(original_path)
+        if path[0] == 'workspace':
+            del path [0:2]
         client_id = "{}:{}".format(src.hostname, src.port)
 
-        if path[2] == 'connect':
+        if path[0] == 'connect':
             if client_id not in self._connected_clients:
                 self._connected_clients[client_id] = [src, False]
             self.send_reply(src, original_path, QlabStatus.Ok, 'ok')
             return
 
-        if path[2] == 'disconnect':
+        if path[0] == 'disconnect':
             if client_id in self._connected_clients:
                 del self._connected_clients[client_id]
             else:
@@ -136,7 +140,7 @@ class QlabMimic(Plugin):
             self.send_reply(src, original_path, QlabStatus.Ok)
             return
 
-        if path[2] == 'updates':
+        if path[0] == 'updates':
             if client_id not in self._connected_clients:
                 self.send_reply(src, original_path, QlabStatus.NotOk)
                 return

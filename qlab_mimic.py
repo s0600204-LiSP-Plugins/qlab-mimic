@@ -36,12 +36,11 @@ from lisp.ui.ui_utils import translate
 
 from .cues_handler import CuesHandler
 from .osc_tcp_server import OscTcpServer
+from .utility import QlabStatus
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
 QLAB_TCP_PORT = 53000
-QLAB_STATUS_OK = 'ok'
-QLAB_STATUS_NOT_OK = 'error'
 
 class QlabMimic(Plugin):
     """LiSP pretends to be QLab for the purposes of basic OSC control"""
@@ -93,11 +92,11 @@ class QlabMimic(Plugin):
         src.set_slip_enabled(True)
         response = {
             'address': path,
-            'status': status,
+            'status': status.value,
         }
         if send_id and self._session_uuid:
             response['workspace_id'] = self._session_uuid
-        if status is QLAB_STATUS_OK and data is not None:
+        if status is QlabStatus.Ok and data is not None:
             response['data'] = data
         response = self._encoder.encode(response)
         self._server.send(src, '/reply' + path, response)
@@ -110,7 +109,7 @@ class QlabMimic(Plugin):
         }
 
         if path[0] not in handlers:
-            self.send_reply(src, original_path, QLAB_STATUS_NOT_OK)
+            self.send_reply(src, original_path, QlabStatus.NotOk)
             return
 
         handlers.get(
@@ -126,7 +125,7 @@ class QlabMimic(Plugin):
         if path[2] == 'connect':
             if client_id not in self._connected_clients:
                 self._connected_clients[client_id] = [src, False]
-            self.send_reply(src, original_path, QLAB_STATUS_OK, 'ok')
+            self.send_reply(src, original_path, QlabStatus.Ok, 'ok')
             return
 
         if path[2] == 'disconnect':
@@ -134,30 +133,30 @@ class QlabMimic(Plugin):
                 del self._connected_clients[client_id]
             else:
                 logger.warn(client_id + " not recognised (disconnect)")
-            self.send_reply(src, original_path, QLAB_STATUS_OK)
+            self.send_reply(src, original_path, QlabStatus.Ok)
             return
 
         if path[2] == 'updates':
             if client_id not in self._connected_clients:
-                self.send_reply(src, original_path, QLAB_STATUS_NOT_OK)
+                self.send_reply(src, original_path, QlabStatus.NotOk)
                 return
             self._connected_clients[client_id][1] = bool(args[0])
-            self.send_reply(src, original_path, QLAB_STATUS_OK)
+            self.send_reply(src, original_path, QlabStatus.Ok)
             return
 
     def _handle_cuelists(self, path, args, types, src, user_data):
          cuelists = self._cues_message_handler.get_cuelists()
-         self.send_reply(src, path, QLAB_STATUS_OK, cuelists)
+         self.send_reply(src, path, QlabStatus.Ok, cuelists)
 
     def _handle_thump(self, path, args, types, src, user_data):
-        self.send_reply(src, path, QLAB_STATUS_OK, 'thump')
+        self.send_reply(src, path, QlabStatus.Ok, 'thump')
 
     def _handle_workspace(self, original_path, args, types, src, user_data):
         path = split_path(original_path)
 
          # If wrong workspace
         if path[1] != self._session_uuid and path[1] != self._session_name:
-            self.send_reply(src, original_path, QLAB_STATUS_NOT_OK, send_id=False)
+            self.send_reply(src, original_path, QlabStatus.NotOk, send_id=False)
             return
         del path[0:2]
 
@@ -170,7 +169,7 @@ class QlabMimic(Plugin):
         }
 
         if path[0] not in handlers:
-            self.send_reply(src, original_path, QLAB_STATUS_NOT_OK)
+            self.send_reply(src, original_path, QlabStatus.NotOk)
             return
 
         handlers.get(
@@ -181,7 +180,7 @@ class QlabMimic(Plugin):
 
     def _handle_workspaces(self, path, args, types, src, user_data):
         if not self._session_uuid:
-            self.send_reply(src, path, QLAB_STATUS_NOT_OK, send_id=False)
+            self.send_reply(src, path, QlabStatus.NotOk, send_id=False)
             return
 
         workspaces = [{
@@ -191,7 +190,7 @@ class QlabMimic(Plugin):
             'version': '0.1',
         }]
 
-        self.send_reply(src, path, QLAB_STATUS_OK, workspaces, send_id=False)
+        self.send_reply(src, path, QlabStatus.Ok, workspaces, send_id=False)
 
 def split_path(path):
     path = path.split('/')

@@ -143,6 +143,16 @@ class QlabMimic(Plugin):
             self.send_reply(src, original_path, QlabStatus.Ok)
             return
 
+    def _handle_cue(self, original_path, args, types, src, user_data):
+        path = split_path(original_path)
+        if path[0] == 'workspace':
+            del path[0:2]
+        if path[0] == 'cue':
+            status, data = self._cues_message_handler.by_cue_number(path, args, self.app.cue_model)
+        else:
+            status, data = self._cues_message_handler.by_cue_id(path, args, self.app.cue_model)
+        self.send_reply(src, original_path, status, data)
+
     def _handle_cuelists(self, path, args, types, src, user_data):
          cuelists = self._cues_message_handler.get_cuelists()
          self.send_reply(src, path, QlabStatus.Ok, cuelists)
@@ -161,6 +171,8 @@ class QlabMimic(Plugin):
 
         handlers = {
             'connect': self._handle_connection,
+            'cue': self._handle_cue,
+            'cue_id': self._handle_cue,
             'cueLists': self._handle_cuelists,
             'disconnect': self._handle_connection,
             'thump': self._handle_thump,

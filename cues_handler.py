@@ -22,53 +22,45 @@
 # You should have received a copy of the GNU General Public License
 # along with Linux Show Player.  If not, see <http://www.gnu.org/licenses/>.
 
-from uuid import uuid4
-
+from lisp.cues.cue_model import CueModel
 from lisp.plugins.cart_layout.layout import CartLayout
 from lisp.plugins.list_layout.layout import ListLayout
 from lisp.ui.ui_utils import translate
 
+from .pseudocues import CueCart, CueList
+
 class CuesHandler:
 
     def __init__(self):
-        self._cuelists = {}
-        self._cuelist_order = []
+        self._cuelists = CueModel()
 
     def register_cuelists(self, session_layout): # session_layout == self.app.layout @ plugin-level
-        self._cuelists = {}
+        self._cuelists.reset()
 
         if isinstance(session_layout, ListLayout):
             # LiSP doesn't support multiple cue lists in List Layout
-            # Thus, we create a single dict encapsulating all cues
-            self._create_cuelist('cuelist', 'Main Cue List')
+            # Thus, we create a single object encapsulating all cues
+            self._cuelists.add(CueList())
 
         if isinstance(session_layout, CartLayout):
-            # We create a dict for each cart tab page
+            # We create an object for each cart tab page
             for page in session_layout.view.pages():
                 index = session_layout.view.indexOf(page)
                 name = session_layout.view.tabTexts()[index]
-                self._create_cuelist('cuecart', name)
+                self._cuelists.add(CueCart(name, index))
 
     def get_cuelists(self):
         cuelists = []
-        for uuid in self._cuelist_order:
-            cuelists.append(self._cuelists[uuid])
-            # todo: populate cue array
+        for container in self._cuelists:
+            cuelists.append({
+                'uniqueID': container.id, # string
+                'number': container.index, # string
+                'name': container.name, # string
+                'listName': container.name, # string
+                'type': container.type.lower(), # string; cuelist or cuecart
+                'colorName': 'none', # string
+                'flagged': 0, # number
+                'armed': 1, # number
+                'cues': [],
+            })
         return cuelists
-
-    def _create_cuelist(self, typename, name):
-        uuid = str(uuid4())
-        cuelist = {
-            'uniqueID': uuid, # string
-            'number': str(-len(self._cuelist_order) - 1), # string
-            'name': name, # string
-            'listName': name, # string
-            'type': typename, # string; cuelist or cuecart
-            'colorName': 'none', # string
-            'flagged': 0, # number
-            'armed': 1, # number
-            'cues': []
-        }
-        self._cuelists[uuid] = cuelist
-        self._cuelist_order.append(uuid)
-

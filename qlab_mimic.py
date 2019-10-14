@@ -67,6 +67,8 @@ class QlabMimic(Plugin):
         self._session_name = session.name()
         self._session_uuid = str(uuid4())
 
+        session.finalized.connect(self._emit_workspace_disconnect)
+
         self._cues_message_handler.register_cuelists(self.app.layout)
 
     @property
@@ -92,6 +94,14 @@ class QlabMimic(Plugin):
             response['data'] = data
         response = self._encoder.encode(response)
         self._server.send(src, '/reply' + path, response)
+
+    def send_update(self, path, args=[], always_send=False):
+        path[0:0] = ['', 'update', 'workspace', self._session_uuid]
+        path = '/'.join(path)
+        for client in self._connected_clients.values():
+            if client[1] or always_send:
+                client[0].set_slip_enabled(True)
+                self._server.send(client[0], path, *args)
 
     def _generic_handler(self, original_path, args, types, src, user_data):
         path = split_path(original_path)
@@ -199,6 +209,13 @@ class QlabMimic(Plugin):
         }]
 
         self.send_reply(src, path, QlabStatus.Ok, workspaces, send_id=False)
+
+    def _emit_workspace_disconnect(self):
+        '''Sent to tell clients that they need to disconnect
+
+        e.g. because the workspace or application is being closed.
+        '''
+        self.send_update(['disconnect'], always_send=True)
 
 def split_path(path):
     path = path.split('/')

@@ -68,6 +68,9 @@ class QlabMimic(Plugin):
         self._session_uuid = str(uuid4())
 
         session.finalized.connect(self._emit_workspace_disconnect)
+        self.app.cue_model.item_added.connect(self._emit_workspace_updated)
+        self.app.layout.model.item_moved.connect(self._emit_workspace_updated)
+        self.app.cue_model.item_removed.connect(self._emit_workspace_updated)
 
         self._cues_message_handler.register_cuelists(self.app.layout)
 
@@ -216,6 +219,13 @@ class QlabMimic(Plugin):
         e.g. because the workspace or application is being closed.
         '''
         self.send_update(['disconnect'], always_send=True)
+
+    def _emit_workspace_updated(self, *_):
+        '''Sent if the cue lists for the workspace need reloading
+
+        For instance when a cue is added, removed, or other aspects of a workspace are updated.
+        '''
+        self.send_update([])
 
 def split_path(path):
     path = path.split('/')

@@ -35,6 +35,10 @@ from .utility import QlabStatus
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
+# Other states: next, fadein_start, fadein_end, fadeout_start, fadeout_end
+# (the latter four do not transmit `self`, so there's no easy way to tell which cue they were emitted from)
+CUE_STATE_CHANGES = ['interrupted', 'started', 'stopped', 'paused', 'error', 'error_clear', 'end']
+
 TARGETS_FILES = ['GstMediaCue']
 TARGETS_OTHER_CUES = ['CollectionCue', 'IndexActionCue', 'SeekCue', 'VolumeControl']
 

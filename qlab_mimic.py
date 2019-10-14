@@ -31,7 +31,7 @@ from lisp.core.plugin import Plugin
 from lisp.core.util import get_lan_ip
 from lisp.ui.ui_utils import translate
 
-from .cues_handler import CuesHandler
+from .cues_handler import CuesHandler, CUE_STATE_CHANGES
 from .osc_tcp_server import OscTcpServer
 from .utility import QlabStatus
 
@@ -68,9 +68,9 @@ class QlabMimic(Plugin):
         self._session_uuid = str(uuid4())
 
         session.finalized.connect(self._emit_workspace_disconnect)
-        self.app.cue_model.item_added.connect(self._emit_workspace_updated)
+        self.app.cue_model.item_added.connect(self._on_cue_added)
         self.app.layout.model.item_moved.connect(self._emit_workspace_updated)
-        self.app.cue_model.item_removed.connect(self._emit_workspace_updated)
+        self.app.cue_model.item_removed.connect(self._on_cue_removed)
 
         self._cues_message_handler.register_cuelists(self.app.layout)
 
@@ -212,6 +212,28 @@ class QlabMimic(Plugin):
         }]
 
         self.send_reply(src, path, QlabStatus.Ok, workspaces, send_id=False)
+
+    def _on_cue_added(self, cue):
+        self._emit_workspace_updated()
+
+        # Set listeners for when a cue has been edited...
+        cue.properties_changed.connect(self._emit_cue_updated)
+        # ...and when it changes state
+        for state_change in CUE_STATE_CHANGES:
+            cue.__getattribute__(state_change).connect(self._emit_cue_updated)
+
+    def _on_cue_removed(self, cue):
+        self._emit_workspace_updated()
+
+        # Remove listeners for when a cue has been edited...
+        cue.properties_changed.disconnect(self._emit_cue_updated)
+        # ...and when it changes state
+        for state_change in CUE_STATE_CHANGES:
+            cue.__getattribute__(state_change).disconnect(self._emit_cue_updated)
+
+    def _emit_cue_updated(self, cue):
+        '''Sent if the cue or its state has changed'''
+        self.send_update(['cue_id', cue.id])
 
     def _emit_workspace_disconnect(self):
         '''Sent to tell clients that they need to disconnect

@@ -29,6 +29,7 @@ from uuid import uuid4
 # pylint: disable=import-error
 from lisp.core.plugin import Plugin
 from lisp.core.util import get_lan_ip
+from lisp.plugins.list_layout.layout import ListLayout
 from lisp.ui.ui_utils import translate
 
 from .cues_handler import CuesHandler, CUE_STATE_CHANGES
@@ -71,6 +72,9 @@ class QlabMimic(Plugin):
         self.app.cue_model.item_added.connect(self._on_cue_added)
         self.app.layout.model.item_moved.connect(self._emit_workspace_updated)
         self.app.cue_model.item_removed.connect(self._on_cue_removed)
+
+        if isinstance(self.app.layout, ListLayout):
+            self.app.layout.view.listView.currentItemChanged.connect(self._emit_playback_head_updated)
 
         self._cues_message_handler.register_cuelists(self.app.layout)
 
@@ -248,6 +252,11 @@ class QlabMimic(Plugin):
         For instance when a cue is added, removed, or other aspects of a workspace are updated.
         '''
         self.send_update([])
+
+    def _emit_playback_head_updated(self, selected, _):
+        '''Sent if the the selected cue has changed'''
+        cuelists = self._cues_message_handler.get_cuelists()
+        self.send_update(['cueList', cuelists[0]['uniqueID'], 'playbackPosition'], [selected.cue.id])
 
 def split_path(path):
     path = path.split('/')

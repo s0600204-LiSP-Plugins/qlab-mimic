@@ -26,9 +26,6 @@ from json import JSONEncoder
 import logging
 from uuid import uuid4
 
-# pylint: disable=no-name-in-module
-from liblo import ServerThread, ServerError, TCP
-
 # pylint: disable=import-error
 from lisp.core.plugin import Plugin
 from lisp.core.util import get_lan_ip

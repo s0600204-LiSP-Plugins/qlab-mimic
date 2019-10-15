@@ -69,7 +69,6 @@ class QlabMimic(Plugin):
         self._session_name = session.name()
         self._session_uuid = str(uuid4())
 
-        session.finalized.connect(self._emit_workspace_disconnect)
         self.app.cue_model.item_added.connect(self._on_cue_added)
         self.app.layout.model.item_moved.connect(self._emit_workspace_updated)
         self.app.cue_model.item_removed.connect(self._on_cue_removed)
@@ -78,6 +77,19 @@ class QlabMimic(Plugin):
             self.app.layout.view.listView.currentItemChanged.connect(self._emit_playback_head_updated)
 
         self._cues_message_handler.register_cuelists(self.app.layout)
+
+    def _pre_session_deinitialisation(self, _):
+        self._emit_workspace_disconnect()
+
+        self._session_name = None
+        self._session_uuid = None
+
+        self.app.cue_model.item_added.disconnect(self._on_cue_added)
+        self.app.layout.model.item_moved.disconnect(self._emit_workspace_updated)
+        self.app.cue_model.item_removed.disconnect(self._on_cue_removed)
+
+        if isinstance(self.app.layout, ListLayout):
+            self.app.layout.view.listView.currentItemChanged.disconnect(self._emit_playback_head_updated)
 
     @property
     def server(self):

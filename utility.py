@@ -30,3 +30,8 @@ class QlabStatus(Enum):
 
 def client_id_string(src):
     return '{}:{}'.format(src.hostname, src.port)
+
+def split_path(path):
+    path = path.split('/')
+    path.pop(0)
+    return path

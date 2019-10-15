@@ -34,7 +34,7 @@ from lisp.ui.ui_utils import translate
 
 from .cues_handler import CuesHandler, CUE_STATE_CHANGES
 from .osc_tcp_server import OscTcpServer
-from .utility import client_id_string, QlabStatus
+from .utility import client_id_string, QlabStatus, split_path
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
@@ -269,8 +269,3 @@ class QlabMimic(Plugin):
         '''Sent if the the selected cue has changed'''
         cuelists = self._cues_message_handler.get_cuelists()
         self.send_update(['cueList', cuelists[0]['uniqueID'], 'playbackPosition'], [selected.cue.id])
-
-def split_path(path):
-    path = path.split('/')
-    path.pop(0)
-    return path

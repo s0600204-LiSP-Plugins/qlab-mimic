@@ -34,7 +34,7 @@ from lisp.ui.ui_utils import translate
 
 from .cues_handler import CuesHandler, CUE_STATE_CHANGES
 from .osc_tcp_server import OscTcpServer
-from .utility import QlabStatus
+from .utility import client_id_string, QlabStatus
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
@@ -60,6 +60,7 @@ class QlabMimic(Plugin):
         self._cues_message_handler = CuesHandler()
 
         self._server = OscTcpServer(QLAB_TCP_PORT)
+        self._server.register_method(self._handle_always_reply, '/alwaysReply')
         self._server.register_method(self._handle_workspaces, '/workspaces')
         self._server.start()
         self._server.new_message.connect(self._generic_handler)
@@ -90,6 +91,9 @@ class QlabMimic(Plugin):
         self.terminate()
 
     def send_reply(self, src, path, status, data=None, send_id=True):
+        client_id = client_id_string(src)
+        if data is None and (client_id not in self._connected_clients or not self._connected_clients[client_id][2]):
+            return
         src.set_slip_enabled(True)
         response = {
             'address': path,
@@ -129,29 +133,37 @@ class QlabMimic(Plugin):
             original_path, args, types, src, user_data
         )
 
+    def _handle_always_reply(self, original_path, args, types, src, user_data):
+        client_id = client_id_string(src)
+        if client_id not in self._connected_clients:
+            # No point in sending a reply, as we don't recognise the client
+            return
+        self._connected_clients[client_id][2] = bool(args[0])
+        self.send_reply(src, original_path, QlabStatus.Ok)
+
     def _handle_connection(self, original_path, args, types, src, user_data):
         path = split_path(original_path)
         if path[0] == 'workspace':
             del path [0:2]
-        client_id = "{}:{}".format(src.hostname, src.port)
+        client_id = client_id_string(src)
 
         if path[0] == 'connect':
             if client_id not in self._connected_clients:
-                self._connected_clients[client_id] = [src, False]
+                self._connected_clients[client_id] = [src, False, False]
             self.send_reply(src, original_path, QlabStatus.Ok, 'ok')
             return
 
         if path[0] == 'disconnect':
             if client_id in self._connected_clients:
+                self.send_reply(src, original_path, QlabStatus.Ok)
                 del self._connected_clients[client_id]
             else:
                 logger.warn(client_id + " not recognised (disconnect)")
-            self.send_reply(src, original_path, QlabStatus.Ok)
             return
 
         if path[0] == 'updates':
             if client_id not in self._connected_clients:
-                self.send_reply(src, original_path, QlabStatus.NotOk)
+                # No point in sending a reply, as we don't recognise the client
                 return
             self._connected_clients[client_id][1] = bool(args[0])
             self.send_reply(src, original_path, QlabStatus.Ok)

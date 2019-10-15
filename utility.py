@@ -27,3 +27,6 @@ from enum import Enum
 class QlabStatus(Enum):
     Ok = 'ok'
     NotOk = 'error'
+
+def client_id_string(src):
+    return '{}:{}'.format(src.hostname, src.port)

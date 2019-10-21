@@ -130,8 +130,8 @@ class QlabMimic(Plugin):
         path = split_path(original_path)
 
         handlers = {
-            'disconnect': self._handle_connection,
-            'updates': self._handle_connection,
+            'disconnect': self._handle_disconnect,
+            'updates': self._handle_updates,
             'workspace': self._handle_workspace,
         }
 
@@ -153,33 +153,11 @@ class QlabMimic(Plugin):
         self._connected_clients[client_id][2] = bool(args[0])
         self.send_reply(src, original_path, QlabStatus.Ok)
 
-    def _handle_connection(self, original_path, args, types, src, user_data):
-        path = split_path(original_path)
-        if path[0] == 'workspace':
-            del path [0:2]
+    def _handle_connect(self, original_path, args, types, src, user_data):
         client_id = client_id_string(src)
-
-        if path[0] == 'connect':
-            if client_id not in self._connected_clients:
-                self._connected_clients[client_id] = [src, False, False]
-            self.send_reply(src, original_path, QlabStatus.Ok, 'ok')
-            return
-
-        if path[0] == 'disconnect':
-            if client_id in self._connected_clients:
-                self.send_reply(src, original_path, QlabStatus.Ok)
-                del self._connected_clients[client_id]
-            else:
-                logger.warn(client_id + " not recognised (disconnect)")
-            return
-
-        if path[0] == 'updates':
-            if client_id not in self._connected_clients:
-                # No point in sending a reply, as we don't recognise the client
-                return
-            self._connected_clients[client_id][1] = bool(args[0])
-            self.send_reply(src, original_path, QlabStatus.Ok)
-            return
+        if client_id not in self._connected_clients:
+            self._connected_clients[client_id] = [src, False, False]
+        self.send_reply(src, original_path, QlabStatus.Ok, 'ok')
 
     def _handle_cue(self, original_path, args, types, src, user_data):
         path = split_path(original_path)
@@ -195,8 +173,24 @@ class QlabMimic(Plugin):
          cuelists = self._cues_message_handler.get_cuelists()
          self.send_reply(src, path, QlabStatus.Ok, cuelists)
 
+    def _handle_disconnect(self, original_path, args, types, src, user_data):
+        client_id = client_id_string(src)
+        if client_id in self._connected_clients:
+            self.send_reply(src, original_path, QlabStatus.Ok)
+            del self._connected_clients[client_id]
+        else:
+            logger.warn(client_id + " not recognised (disconnect)")
+
     def _handle_thump(self, path, args, types, src, user_data):
         self.send_reply(src, path, QlabStatus.Ok, 'thump')
+
+    def _handle_updates(self, original_path, args, types, src, user_data):
+        client_id = client_id_string(src)
+        if client_id not in self._connected_clients:
+            # No point in sending a reply, as we don't recognise the client
+            return
+        self._connected_clients[client_id][1] = bool(args[0])
+        self.send_reply(src, original_path, QlabStatus.Ok)
 
     def _handle_workspace(self, original_path, args, types, src, user_data):
         path = split_path(original_path)
@@ -208,13 +202,13 @@ class QlabMimic(Plugin):
         del path[0:2]
 
         handlers = {
-            'connect': self._handle_connection,
+            'connect': self._handle_connect,
             'cue': self._handle_cue,
             'cue_id': self._handle_cue,
             'cueLists': self._handle_cuelists,
-            'disconnect': self._handle_connection,
+            'disconnect': self._handle_disconnect,
             'thump': self._handle_thump,
-            'updates': self._handle_connection,
+            'updates': self._handle_updates,
         }
 
         if path[0] not in handlers:

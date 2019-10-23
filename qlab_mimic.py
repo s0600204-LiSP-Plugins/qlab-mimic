@@ -130,6 +130,8 @@ class QlabMimic(Plugin):
         path = split_path(original_path)
 
         handlers = {
+            'cue': self._handle_cue,
+            'cue_id': self._handle_cue,
             'disconnect': self._handle_disconnect,
             'updates': self._handle_updates,
             'workspace': self._handle_workspace,

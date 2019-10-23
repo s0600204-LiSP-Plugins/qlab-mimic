@@ -62,10 +62,10 @@ class CuesHandler:
                 name = session_layout.view.tabTexts()[index]
                 self._cuelists.add(CueCart(name, index))
 
-    def get_cuelists(self):
+    def get_cuelists(self, session_cue_model): # session_cue_model == self.app.layout.model @ plugin-level
         cuelists = []
         for container in self._cuelists:
-            cuelists.append(self._cue_summary(container))
+            cuelists.append(self._cue_summary(container, session_cue_model))
         return cuelists
 
     def by_cue_id(self, path, args, cue_model):
@@ -188,7 +188,7 @@ class CuesHandler:
 
         return False
 
-    def _cue_summary(self, cue):
+    def _cue_summary(self, cue, session_cue_model):
         cue_obj = {
             'uniqueID': cue.id, # string
             'number': str(cue.index), # string
@@ -200,9 +200,20 @@ class CuesHandler:
             'armed': 1, # number
         }
         if cue.type in ['CueCart', 'CueList']:
-           child_cues = []
-           cue_obj['cues'] = child_cues
-       return cue_obj
+            cue_obj['cues'] = []
+            cues = None
+            if cue.type == 'CueCart':
+                cues = session_cue_model.iter_page(int(cue.index[1:]) - 1)
+            elif cue.type == 'CueList':
+                cues = session_cue_model
+
+            try:
+                for child in cues:
+                    cue_obj['cues'].append(self._cue_summary(child, session_cue_model))
+            except StopIteration:
+                pass
+
+        return cue_obj
 
     def _derive_qlab_cuetype(self, cue):
         # QLab Cue Types:

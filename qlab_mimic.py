@@ -170,7 +170,7 @@ class QlabMimic(Plugin):
         self.send_reply(src, original_path, status, data)
 
     def _handle_cuelists(self, path, args, types, src, user_data):
-         cuelists = self._cues_message_handler.get_cuelists()
+         cuelists = self._cues_message_handler.get_cuelists(self.app.layout.model)
          self.send_reply(src, path, QlabStatus.Ok, cuelists)
 
     def _handle_disconnect(self, original_path, args, types, src, user_data):
@@ -273,5 +273,5 @@ class QlabMimic(Plugin):
 
     def _emit_playback_head_updated(self, selected, _):
         '''Sent if the the selected cue has changed'''
-        cuelists = self._cues_message_handler.get_cuelists()
+        cuelists = self._cues_message_handler.get_cuelists(self.app.layout.model)
         self.send_update(['cueList', cuelists[0]['uniqueID'], 'playbackPosition'], [selected.cue.id])

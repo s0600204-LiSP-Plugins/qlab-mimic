@@ -65,17 +65,7 @@ class CuesHandler:
     def get_cuelists(self):
         cuelists = []
         for container in self._cuelists:
-            cuelists.append({
-                'uniqueID': container.id, # string
-                'number': container.index, # string
-                'name': container.name, # string
-                'listName': container.name, # string
-                'type': container.type.lower(), # string; cuelist or cuecart
-                'colorName': 'none', # string
-                'flagged': 0, # number
-                'armed': 1, # number
-                'cues': [],
-            })
+            cuelists.append(self._cue_summary(container))
         return cuelists
 
     def by_cue_id(self, path, args, cue_model):
@@ -197,6 +187,22 @@ class CuesHandler:
             return True
 
         return False
+
+    def _cue_summary(self, cue):
+        cue_obj = {
+            'uniqueID': cue.id, # string
+            'number': str(cue.index), # string
+            'name': cue.name, # string
+            'listName': cue.name, # string
+            'type': self._derive_qlab_cuetype(cue), # string
+            'colorName': 'none', # string
+            'flagged': 0, # number
+            'armed': 1, # number
+        }
+        if cue.type in ['CueCart', 'CueList']:
+           child_cues = []
+           cue_obj['cues'] = child_cues
+       return cue_obj
 
     def _derive_qlab_cuetype(self, cue):
         # QLab Cue Types:

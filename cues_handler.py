@@ -53,14 +53,14 @@ class CuesHandler:
         if isinstance(session_layout, ListLayout):
             # LiSP doesn't support multiple cue lists in List Layout
             # Thus, we create a single object encapsulating all cues
-            self._cuelists.add(CueList())
+            self._cuelists.add(CueList(session_layout))
 
         if isinstance(session_layout, CartLayout):
             # We create an object for each cart tab page
             for page in session_layout.view.pages():
                 index = session_layout.view.indexOf(page)
                 name = session_layout.view.tabTexts()[index]
-                self._cuelists.add(CueCart(name, index))
+                self._cuelists.add(CueCart(session_layout, name, index))
 
     def get_cuelists(self, session_cue_model): # session_cue_model == self.app.layout.model @ plugin-level
         cuelists = []

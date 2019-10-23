@@ -133,6 +133,8 @@ class QlabMimic(Plugin):
             'cue': self._handle_cue,
             'cue_id': self._handle_cue,
             'disconnect': self._handle_disconnect,
+            'go': self._handle_go,
+            'stop': self._handle_stop,
             'updates': self._handle_updates,
             'workspace': self._handle_workspace,
         }
@@ -183,6 +185,14 @@ class QlabMimic(Plugin):
         else:
             logger.warn(client_id + " not recognised (disconnect)")
 
+    def _handle_go(self, path, args, types, src, user_data):
+        self.app.layout.go()
+        self.send_reply(src, path, QlabStatus.Ok)
+
+    def _handle_stop(self, path, args, types, src, user_data):
+        self.app.layout.stop_all()
+        self.send_reply(src, path, QlabStatus.Ok)
+
     def _handle_thump(self, path, args, types, src, user_data):
         self.send_reply(src, path, QlabStatus.Ok, 'thump')
 
@@ -208,6 +218,8 @@ class QlabMimic(Plugin):
             'cue_id': self._handle_cue,
             'cueLists': self._handle_cuelists,
             'disconnect': self._handle_disconnect,
+            'go': self._handle_go,
+            'stop': self._handle_stop,
             'thump': self._handle_thump,
             'updates': self._handle_updates,
         }

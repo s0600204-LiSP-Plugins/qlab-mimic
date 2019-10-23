@@ -30,14 +30,25 @@ from lisp.ui.ui_utils import translate
 
 class CueCart(Cue):
 
-    def __init__(self, name, index, **kwargs):
+    def __init__(self, layout, name, index, **kwargs):
         super().__init__(**kwargs)
         self.name = translate('CueName', name)
         self.index = 'P' + str(index + 1)
+        self._layout = layout
+
+    def stop(self, **_):
+        self._layout.stop_all()
 
 class CueList(Cue):
 
-    def __init__(self, **kwargs):
+    def __init__(self, layout, **kwargs):
         super().__init__(**kwargs)
         self.name = translate('CueName', 'Main Cue List')
         self.index = 'L'
+        self._layout = layout
+
+    def start(self, **_):
+        self._layout.go()
+
+    def stop(self, **_):
+        self._layout.stop_all()

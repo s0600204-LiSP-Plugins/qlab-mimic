@@ -47,6 +47,18 @@ class CueList(Cue):
         self.index = 'L'
         self._layout = layout
 
+    def standby_cue_id(self):
+        cue_num = self._layout.standby_index()
+        if cue_num == -1:
+            return 'none'
+        return self._layout.cue_at(cue_num).id
+
+    def standby_cue_num(self):
+        cue_num = self._layout.standby_index()
+        if cue_num == -1:
+            return 'none'
+        return str(cue_num)
+
     def start(self, **_):
         self._layout.go()
 

@@ -133,8 +133,8 @@ class CuesHandler:
             'name': cue.name,
             'notes': cue.description,
             'number': str(cue.index),
-            'playbackPosition': 'none', # Same as `playbackPositionId`. See note for that
-            'playbackPositionId': 'none', # CueList: UUID of current selected cue; CueCart: 'none'; no other cue should support this.
+            'playbackPosition': cue.standby_cue_num() if cue.type == 'CueList' else 'none',
+            'playbackPositionId': cue.standby_cue_id() if cue.type == 'CueList' else 'none',
             'type': self._derive_qlab_cuetype(cue),
             'uniqueID': cue.id,
         }.get(path[0], None)

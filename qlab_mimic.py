@@ -199,7 +199,6 @@ class QlabMimic(Plugin):
         if path[1] != self._session_uuid and path[1] != self._session_name:
             self.send_reply(src, original_path, QlabStatus.NotOk, send_id=False)
             return
-        del path[0:2]
 
         handlers = {
             'connect': self._handle_connect,
@@ -211,12 +210,12 @@ class QlabMimic(Plugin):
             'updates': self._handle_updates,
         }
 
-        if path[0] not in handlers:
+        if path[2] not in handlers:
             self.send_reply(src, original_path, QlabStatus.NotOk)
             return
 
         handlers.get(
-            path[0], lambda *_: None
+            path[2], lambda *_: None
         )(
             original_path, args, types, src, user_data
         )

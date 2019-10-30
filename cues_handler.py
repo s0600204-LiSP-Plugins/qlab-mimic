@@ -200,20 +200,26 @@ class CuesHandler:
             'armed': 1, # number
         }
         if cue.type in ['CueCart', 'CueList']:
-            cue_obj['cues'] = []
-            cues = None
-            if cue.type == 'CueCart':
-                cues = session_cue_model.iter_page(int(cue.index[1:]) - 1)
-            elif cue.type == 'CueList':
-                cues = session_cue_model
-
-            try:
-                for child in cues:
-                    cue_obj['cues'].append(self._cue_summary(child, session_cue_model))
-            except StopIteration:
-                pass
+            cue_obj['cues'] = self._cue_children(cue, session_cue_model)
 
         return cue_obj
+
+    def _cue_children(self, cue, session_cue_model):
+        if cue.type not in ['CueCart', 'CueList']:
+            return None
+        cues = []
+        cues_iter = None
+        if cue.type == 'CueCart':
+            cues_iter = session_cue_model.iter_page(int(cue.index[1:]) - 1)
+        elif cue.type == 'CueList':
+            cues_iter = session_cue_model
+
+        try:
+            for child in cues_iter:
+                cues.append(self._cue_summary(child, session_cue_model))
+        except StopIteration:
+            pass
+        return cues
 
     def _derive_qlab_cuetype(self, cue):
         # QLab Cue Types:

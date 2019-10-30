@@ -113,22 +113,22 @@ class CuesHandler:
 
     def _cue_info_get(self, cue, path):
         return {
-            'armed': True,
+            'armed': 'true',
             'currentDuration': cue.duration,
             'defaultName': translate('CueName', cue.Name),
             'displayName': cue.name,
             'fileTarget': None if cue.type != 'GstMediaCue' else cue.input_uri, # @todo check the appropriate property
-            'hasCueTargets': True if cue.type in TARGETS_OTHER_CUES else False,
-            'hasFileTargets': True if cue.type in TARGETS_FILES else False,
-            'isActionRunning': cue.state == CueState.Running,
-            'isBroken': cue.state == CueState.Error,
-            'isFlagged': False,
-            'isLoaded': True,
-            'isOverridden': False, # whether a cue's output is suppressed by an override control
-            'isPanicking': False, # is fading out during a 'panic' (all stop)
-            'isPaused': cue.state == CueState.IsPaused,
-            'isRunning': cue.state == CueState.IsRunning,
-            'isTailingOut': False, # if cue has an AudioUnit which is decaying
+            'flagged': 'false',
+            'hasCueTargets': str(cue.type in TARGETS_OTHER_CUES).lower(),
+            'hasFileTargets': str(cue.type in TARGETS_FILES).lower(),
+            'isActionRunning': str(cue.state == CueState.Running).lower(),
+            'isBroken': str(cue.state == CueState.Error).lower(),
+            'isLoaded': 'true',
+            'isOverridden': 'false', # whether a cue's output is suppressed by an override control
+            'isPanicking': 'false', # is fading out during a 'panic' (all stop)
+            'isPaused': str(cue.state == CueState.IsPaused).lower(),
+            'isRunning': str(cue.state == CueState.IsRunning).lower(),
+            'isTailingOut': 'false', # if cue has an AudioUnit which is decaying
             'listName': '* {} *'.format(cue.name),
             'name': cue.name,
             'notes': cue.description,
@@ -196,8 +196,8 @@ class CuesHandler:
             'listName': cue.name, # string
             'type': self._derive_qlab_cuetype(cue), # string
             'colorName': 'none', # string
-            'flagged': 0, # number
-            'armed': 1, # number
+            'flagged': 'false', # number when setting, string when returning
+            'armed': 'true', # number when setting, string when returning
         }
         if cue.type in ['CueCart', 'CueList']:
             cue_obj['cues'] = self._cue_children(cue, session_cue_model)

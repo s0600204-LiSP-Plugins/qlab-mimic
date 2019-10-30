@@ -77,7 +77,7 @@ class CuesHandler:
             # Thus, we create a single object encapsulating all cues
             self._cuelists.add(CueList(session_layout))
 
-        if isinstance(session_layout, CartLayout):
+        elif isinstance(session_layout, CartLayout):
             # We create an object for each cart tab page
             for page in session_layout.view.pages():
                 index = session_layout.view.indexOf(page)
@@ -136,6 +136,9 @@ class CuesHandler:
     def _cue_info_get(self, cue, path):
         return {
             'armed': lambda: 'true',
+            'cartColumns': lambda: cue.columns if cue.type == 'CueCart' else None,
+            'cartPosition': lambda: self._get_cart_position(cue) if cue.type != 'CueCart' else [0, 0],
+            'cartRows': lambda: cue.rows if cue.type == 'CueCart' else None,
             'currentDuration': lambda: cue.duration,
             'defaultName': lambda: translate('CueName', cue.Name),
             'displayName': lambda: cue.name,
@@ -152,6 +155,7 @@ class CuesHandler:
             'isRunning': lambda: str(cue.state == CueState.IsRunning).lower(),
             'isTailingOut': lambda: 'false', # if cue has an AudioUnit which is decaying
             'listName': lambda: '* {} *'.format(cue.name),
+            'mode': lambda: 5 if cue.type == 'CueCart' else 0, # List: 0, Groups 1-4, Cart: 5
             'name': lambda: cue.name,
             'notes': lambda: cue.description,
             'number': lambda: str(cue.index),
@@ -249,3 +253,9 @@ class CuesHandler:
             logger.debug('Cue type {} needs aliasing!'.format(cue.type))
             cue_type = 'script'
         return cue_type
+
+    def _get_cart_position(self, cue):
+        parent = list(self._cuelists.items())[0][1]
+        if isinstance(parent, CueCart):
+            return parent.position(cue)[1:]
+        return [0, 0]

@@ -34,7 +34,19 @@ class CueCart(Cue):
         super().__init__(**kwargs)
         self.name = translate('CueName', name)
         self.index = 'P' + str(index + 1)
+        self._index = index
         self._layout = layout
+
+    @property
+    def columns(self):
+        return self._layout.view.widget(self._index).columns
+
+    def position(self, cue):
+        return list(self._layout.to_3d_index(int(cue.index)))
+
+    @property
+    def rows(self):
+        return self._layout.view.widget(self._index).rows
 
     def stop(self, **_):
         self._layout.stop_all()

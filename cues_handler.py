@@ -42,6 +42,28 @@ CUE_STATE_CHANGES = ['interrupted', 'started', 'stopped', 'paused', 'error', 'er
 TARGETS_FILES = ['GstMediaCue']
 TARGETS_OTHER_CUES = ['CollectionCue', 'IndexActionCue', 'SeekCue', 'VolumeControl']
 
+# QLab Cue Types:
+#   audio, mic, video, camera, text, light, fade, network, midi,
+#   midi file, timecode, group, start, stop, pause, load, reset,
+#   devamp, goto, target, arm, disarm, wait, memo, script, list,
+#   cuelist, cue list, cart, cuecart, or cue cart
+CUE_TYPE_MAPPING = {
+    'CollectionCue': None,
+    'CommandCue': None,
+    'CueCart': 'cuecart',
+    'CueList': 'cuelist',
+    #'DcaAssignCue': None,
+    #'DcaResetCue': None,
+    #'FixtureControlCue': None,
+    'GstMediaCue': 'audio',
+    'IndexActionCue': None,
+    'MidiCue': 'midi',
+    'OscCue': 'network',
+    'SeekCue': None,
+    'StopAll': None,
+    'VolumeControl': 'fade',
+}
+
 class CuesHandler:
 
     def __init__(self):
@@ -222,27 +244,7 @@ class CuesHandler:
         return cues
 
     def _derive_qlab_cuetype(self, cue):
-        # QLab Cue Types:
-        #     audio, mic, video, camera, text, light, fade, network, midi,
-        #     midi file, timecode, group, start, stop, pause, load, reset,
-        #     devamp, goto, target, arm, disarm, wait, memo, script, list,
-        #     cuelist, cue list, cart, cuecart, or cue cart.
-        cue_type = {
-            'CollectionCue': None,
-            'CommandCue': None,
-            'CueCart': 'cuecart',
-            'CueList': 'cuelist',
-            #'DcaAssignCue': None,
-            #'DcaResetCue': None,
-            #'FixtureControlCue': None,
-            'GstMediaCue': 'audio',
-            'IndexActionCue': None,
-            'MidiCue': 'midi',
-            'OscCue': 'network',
-            'SeekCue': None,
-            'StopAll': None,
-            'VolumeControl': 'fade',
-        }.get(cue.type, None)
+        cue_type = CUE_TYPE_MAPPING.get(cue.type, None)
         if cue_type is None:
             logger.debug('Cue type {} needs aliasing!'.format(cue.type))
             cue_type = 'script'

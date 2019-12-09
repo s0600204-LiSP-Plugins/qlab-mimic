@@ -135,31 +135,31 @@ class CuesHandler:
 
     def _cue_info_get(self, cue, path):
         return {
-            'armed': 'true',
-            'currentDuration': cue.duration,
-            'defaultName': translate('CueName', cue.Name),
-            'displayName': cue.name,
-            'fileTarget': None if cue.type != 'GstMediaCue' else cue.input_uri, # @todo check the appropriate property
-            'flagged': 'false',
-            'hasCueTargets': str(cue.type in TARGETS_OTHER_CUES).lower(),
-            'hasFileTargets': str(cue.type in TARGETS_FILES).lower(),
-            'isActionRunning': str(cue.state == CueState.Running).lower(),
-            'isBroken': str(cue.state == CueState.Error).lower(),
-            'isLoaded': 'true',
-            'isOverridden': 'false', # whether a cue's output is suppressed by an override control
-            'isPanicking': 'false', # is fading out during a 'panic' (all stop)
-            'isPaused': str(cue.state == CueState.IsPaused).lower(),
-            'isRunning': str(cue.state == CueState.IsRunning).lower(),
-            'isTailingOut': 'false', # if cue has an AudioUnit which is decaying
-            'listName': '* {} *'.format(cue.name),
-            'name': cue.name,
-            'notes': cue.description,
-            'number': str(cue.index),
-            'playbackPosition': cue.standby_cue_num() if cue.type == 'CueList' else 'none',
-            'playbackPositionId': cue.standby_cue_id() if cue.type == 'CueList' else 'none',
-            'type': self._derive_qlab_cuetype(cue),
-            'uniqueID': cue.id,
-        }.get(path[0], None)
+            'armed': lambda: 'true',
+            'currentDuration': lambda: cue.duration,
+            'defaultName': lambda: translate('CueName', cue.Name),
+            'displayName': lambda: cue.name,
+            'fileTarget': lambda: None if cue.type != 'GstMediaCue' else cue.input_uri, # @todo check the appropriate property
+            'flagged': lambda: 'false',
+            'hasCueTargets': lambda: str(cue.type in TARGETS_OTHER_CUES).lower(),
+            'hasFileTargets': lambda: str(cue.type in TARGETS_FILES).lower(),
+            'isActionRunning': lambda: str(cue.state == CueState.Running).lower(),
+            'isBroken': lambda: str(cue.state == CueState.Error).lower(),
+            'isLoaded': lambda: 'true',
+            'isOverridden': lambda: 'false', # whether a cue's output is suppressed by an override control
+            'isPanicking': lambda: 'false', # is fading out during a 'panic' (all stop)
+            'isPaused': lambda: str(cue.state == CueState.IsPaused).lower(),
+            'isRunning': lambda: str(cue.state == CueState.IsRunning).lower(),
+            'isTailingOut': lambda: 'false', # if cue has an AudioUnit which is decaying
+            'listName': lambda: '* {} *'.format(cue.name),
+            'name': lambda: cue.name,
+            'notes': lambda: cue.description,
+            'number': lambda: str(cue.index),
+            'playbackPosition': lambda: cue.standby_cue_num() if cue.type == 'CueList' else 'none',
+            'playbackPositionId': lambda: cue.standby_cue_id() if cue.type == 'CueList' else 'none',
+            'type': lambda: self._derive_qlab_cuetype(cue),
+            'uniqueID': lambda: cue.id,
+        }.get(path[0], lambda: None)()
 
     def _cue_info_set(self, cue, path, args):
         #if path[0] == 'armed': # Cues cannot be disarmed in LiSP

@@ -185,9 +185,33 @@ class QlabMimic(Plugin):
         else:
             logger.warn(client_id + " not recognised (disconnect)")
 
+    def _handle_doubleGoWindowRemaining(self, path, args, types, src, user_data):
+        self.send_reply(src, path, QlabStatus.Ok, 0)
+
     def _handle_go(self, path, args, types, src, user_data):
         self.app.layout.go()
         self.send_reply(src, path, QlabStatus.Ok)
+
+    def _handle_selectionIsPlayhead(self, path, args, types, src, user_data):
+        if isinstance(self.app.layout, ListLayout):
+            if args:
+                self.app.layout.selection_mode = not bool(args[0])
+                self.send_reply(src, path, QlabStatus.Ok)
+            else:
+                self.send_reply(src, path, QlabStatus.Ok, int(not self.app.layout.selection_mode))
+
+        else:
+            if args:
+                self.send_reply(src, path, QlabStatus.NotOk)
+            else:
+                self.send_reply(src, path, QlabStatus.Ok, 0)
+
+    def _handle_showMode(self, path, args, types, src, user_data):
+        if args:
+            # We don't support changing this setting
+            self.send_reply(src, path, QlabStatus.NotOk)
+        else:
+            self.send_reply(src, path, QlabStatus.Ok, 1)
 
     def _handle_stop(self, path, args, types, src, user_data):
         self.app.layout.stop_all()
@@ -218,7 +242,10 @@ class QlabMimic(Plugin):
             'cue_id': self._handle_cue,
             'cueLists': self._handle_cuelists,
             'disconnect': self._handle_disconnect,
+            'doubleGoWindowRemaining': self._handle_doubleGoWindowRemaining,
             'go': self._handle_go,
+            'selectionIsPlayhead': self._handle_selectionIsPlayhead,
+            'showMode': self._handle_showMode,
             'stop': self._handle_stop,
             'thump': self._handle_thump,
             'updates': self._handle_updates,

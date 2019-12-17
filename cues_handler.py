@@ -50,8 +50,8 @@ TARGETS_OTHER_CUES = ['CollectionCue', 'IndexActionCue', 'SeekCue', 'VolumeContr
 CUE_TYPE_MAPPING = {
     'CollectionCue': None,
     'CommandCue': None,
-    'CueCart': 'cuecart',
-    'CueList': 'cuelist',
+    'CueCart': 'Cart',
+    'CueList': 'Cue List',
     #'DcaAssignCue': None,
     #'DcaResetCue': None,
     #'FixtureControlCue': None,

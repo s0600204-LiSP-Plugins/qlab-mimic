@@ -178,6 +178,15 @@ class CuesHandler:
 
         #if path[0] == 'number': # LiSP does not allow changing cue numbers
 
+        if path[0] == 'playbackPosition':
+            if cue.type == 'CueList':
+                cue.set_standby_num(args[0])
+                return True
+
+        if path[0] == 'playbackPositionId':
+            if cue.type == 'CueList':
+                return cue.set_standby_id(args[0])
+
         return False
 
     def _cue_do(self, cue, path, args):

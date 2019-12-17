@@ -71,6 +71,16 @@ class CueList(Cue):
             return 'none'
         return str(cue_num)
 
+    def set_standby_id(self, cue_id):
+        for cue in self._layout.cues():
+            if cue.id == cue_id:
+                self._layout.set_standby_index(cue.index)
+                return True
+        return False
+
+    def set_standby_num(self, cue_num):
+        self._layout.set_standby_index(int(cue_num))
+
     def start(self, **_):
         self._layout.go()
 

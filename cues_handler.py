@@ -22,6 +22,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Linux Show Player.  If not, see <http://www.gnu.org/licenses/>.
 
+from ast import literal_eval
 import logging
 
 from lisp.cues.cue import CueState
@@ -119,6 +120,17 @@ class CuesHandler:
         handled = self._cue_do(cue, path, args)
         if handled:
             return (QlabStatus.Ok, None)
+
+        # Handle requests for an arbitrary collection of information about a cue
+        if path[0] == 'valuesForKeys':
+            data = {}
+            for point in literal_eval(args[0]):
+                value = self._cue_info_get(cue, [point])
+                if value is None:
+                    logger.debug('"{}" of cue (type: {}) requested'.format(point, cue.type))
+                else:
+                    data[point] = value
+            return (QlabStatus.Ok, data)
 
         # Handle requests that get information
         info = self._cue_info_get(cue, path) if not args else None

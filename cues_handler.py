@@ -171,6 +171,7 @@ class CuesHandler:
             'name': lambda: cue.name,
             'notes': lambda: cue.description,
             'number': lambda: str(cue.index),
+            'parent': lambda: self._cue_parent(cue),
             'playbackPosition': lambda: cue.standby_cue_num() if cue.type == 'CueList' else 'none',
             'playbackPositionId': lambda: cue.standby_cue_id() if cue.type == 'CueList' else 'none',
             'type': lambda: self._derive_qlab_cuetype(cue),
@@ -267,6 +268,20 @@ class CuesHandler:
         except StopIteration:
             pass
         return cues
+
+    def _cue_parent(self, cue):
+        if cue.type in ['CueCart', 'CueList']:
+            return '[root group of cue lists]'
+
+        first_parent = list(self._cuelists.items())[0][1]
+        if isinstance(first_parent, CueList):
+            return first_parent.id
+
+        if isinstance(first_parent, CueCart):
+            page_num = first_parent.position(cue)[0:1]
+            return list(self._cuelists.items())[page_num][1].id
+
+        return 'none'
 
     def _derive_qlab_cuetype(self, cue):
         cue_type = CUE_TYPE_MAPPING.get(cue.type, None)

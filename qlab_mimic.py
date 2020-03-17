@@ -39,6 +39,7 @@ from .utility import client_id_string, QlabStatus, split_path
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
 QLAB_TCP_PORT = 53000
+QLAB_VERSION = '4.3'
 
 class QlabMimic(Plugin):
     """LiSP pretends to be QLab for the purposes of basic OSC control"""
@@ -136,6 +137,7 @@ class QlabMimic(Plugin):
             'go': self._handle_go,
             'stop': self._handle_stop,
             'updates': self._handle_updates,
+            'version': lambda *_: QLAB_VERSION,
             'workspace': self._handle_workspace,
         }
 
@@ -270,7 +272,7 @@ class QlabMimic(Plugin):
             'uniqueID': self._session_uuid,
             'displayName': self._session_name,
             'hasPasscode': 0,
-            'version': '0.1',
+            'version': QLAB_VERSION,
         }]
 
         self.send_reply(src, path, QlabStatus.Ok, workspaces, send_id=False)

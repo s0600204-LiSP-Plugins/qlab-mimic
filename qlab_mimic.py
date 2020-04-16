@@ -316,4 +316,7 @@ class QlabMimic(Plugin):
     def _emit_playback_head_updated(self, selected, _):
         '''Sent if the the selected cue has changed'''
         cuelists = self._cues_message_handler.get_cuelists(self.app.layout.model)
-        self.send_update(['cueList', cuelists[0]['uniqueID'], 'playbackPosition'], [selected.cue.id])
+        self.send_update(
+            ['cueList', cuelists[0]['uniqueID'], 'playbackPosition'],
+            [selected.cue.id] if selected else []
+        )

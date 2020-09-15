@@ -44,7 +44,7 @@ QLAB_VERSION = '4.3'
 class QlabMimic(Plugin):
     """LiSP pretends to be QLab for the purposes of basic OSC control"""
 
-    Name = 'QLab OSC Mimic'
+    Name = 'QLab Mimic'
     Authors = ('s0600204',)
     Depends = ('Osc',)
     Description = 'LiSP pretends to be QLab for the purposes of basic OSC control.'

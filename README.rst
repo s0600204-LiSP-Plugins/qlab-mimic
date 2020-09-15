@@ -83,9 +83,11 @@ pyliblo
 Installation
 """"""""""""
 
-Once ready, place the contents of this folder in a sub-folder of
-``$XDG_DATA_HOME/LinuxShowPlayer/$LiSP_Version/plugins/`` (On most Linux
-systems, this will default to ``~/.local/share/LinuxShowPlayer/0.6/plugins/``.)
+Once ready, navigate to ``$XDG_DATA_HOME/LinuxShowPlayer/$LiSP_Version/plugins/``
+(on most Linux systems ``$XDG_DATA_HOME`` is ``~/.local/share``), and create a
+subfolder named ``qlab_mimic``.
+
+Place the files comprising this plugin into this new folder.
 
 When you next start **Linux Show Player**, the program should load the plugin
 automatically.

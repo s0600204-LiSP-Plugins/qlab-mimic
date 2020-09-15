@@ -69,9 +69,11 @@ class CuesHandler:
 
     def __init__(self):
         self._cuelists = CueModel()
+        self._session_layout = None
 
     def register_cuelists(self, session_layout): # session_layout == self.app.layout @ plugin-level
         self._cuelists.reset()
+        self._session_layout = session_layout
 
         if isinstance(session_layout, ListLayout):
             # LiSP doesn't support multiple cue lists in List Layout
@@ -85,10 +87,10 @@ class CuesHandler:
                 name = session_layout.view.tabTexts()[index]
                 self._cuelists.add(CueCart(session_layout, name, index))
 
-    def get_cuelists(self, session_cue_model): # session_cue_model == self.app.layout.model @ plugin-level
+    def get_cuelists(self):
         cuelists = []
         for container in self._cuelists:
-            cuelists.append(self._cue_summary(container, session_cue_model))
+            cuelists.append(self._cue_summary(container))
         return cuelists
 
     def by_cue_id(self, path, args, cue_model):
@@ -236,7 +238,7 @@ class CuesHandler:
 
         return False
 
-    def _cue_summary(self, cue, session_cue_model):
+    def _cue_summary(self, cue):
         cue_obj = {
             'uniqueID': cue.id, # string
             'number': str(cue.index), # string
@@ -248,23 +250,23 @@ class CuesHandler:
             'armed': 'true', # number when setting, string when returning
         }
         if cue.type in ['CueCart', 'CueList']:
-            cue_obj['cues'] = self._cue_children(cue, session_cue_model)
+            cue_obj['cues'] = self._cue_children(cue)
 
         return cue_obj
 
-    def _cue_children(self, cue, session_cue_model):
+    def _cue_children(self, cue):
         if cue.type not in ['CueCart', 'CueList']:
             return None
         cues = []
         cues_iter = None
         if cue.type == 'CueCart':
-            cues_iter = session_cue_model.iter_page(int(cue.index[1:]) - 1)
+            cues_iter = self._session_layout.model.iter_page(int(cue.index[1:]) - 1)
         elif cue.type == 'CueList':
-            cues_iter = session_cue_model
+            cues_iter = self._session_layout.model
 
         try:
             for child in cues_iter:
-                cues.append(self._cue_summary(child, session_cue_model))
+                cues.append(self._cue_summary(child))
         except StopIteration:
             pass
         return cues

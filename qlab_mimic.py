@@ -280,6 +280,9 @@ class QlabMimic(Plugin):
     def _on_cue_added(self, cue):
         self._emit_workspace_updated()
 
+        # Emit that the parent cue has been changed
+        self._emit_cue_updated(self._cues_message_handler.cue_parent(cue))
+
         # Set listeners for when a cue has been edited...
         cue.properties_changed.connect(self._emit_cue_updated)
         # ...and when it changes state
@@ -288,6 +291,9 @@ class QlabMimic(Plugin):
 
     def _on_cue_removed(self, cue):
         self._emit_workspace_updated()
+
+        # Emit that the parent cue has been changed
+        self._emit_cue_updated(self._cues_message_handler.cue_parent(cue))
 
         # Remove listeners for when a cue has been edited...
         cue.properties_changed.disconnect(self._emit_cue_updated)

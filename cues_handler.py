@@ -153,6 +153,7 @@ class CuesHandler:
             'cartColumns': lambda: cue.columns if cue.type == 'CueCart' else None,
             'cartPosition': lambda: self._get_cart_position(cue) if cue.type != 'CueCart' else [0, 0],
             'cartRows': lambda: cue.rows if cue.type == 'CueCart' else None,
+            'children': lambda: self._cue_children(cue),
             'currentDuration': lambda: cue.duration,
             'defaultName': lambda: translate('CueName', cue.Name),
             'displayName': lambda: cue.name,
@@ -173,7 +174,7 @@ class CuesHandler:
             'name': lambda: cue.name,
             'notes': lambda: cue.description,
             'number': lambda: str(cue.index),
-            'parent': lambda: self._cue_parent(cue),
+            'parent': lambda: self._cue_parent_id(cue),
             'playbackPosition': lambda: cue.standby_cue_num() if cue.type == 'CueList' else 'none',
             'playbackPositionId': lambda: cue.standby_cue_id() if cue.type == 'CueList' else 'none',
             'type': lambda: self._derive_qlab_cuetype(cue),
@@ -271,17 +272,24 @@ class CuesHandler:
             pass
         return cues
 
-    def _cue_parent(self, cue):
-        if cue.type in ['CueCart', 'CueList']:
-            return '[root group of cue lists]'
-
+    def cue_parent(self, cue):
         first_parent = list(self._cuelists.items())[0][1]
         if isinstance(first_parent, CueList):
-            return first_parent.id
+            return first_parent
 
         if isinstance(first_parent, CueCart):
             page_num = first_parent.position(cue)[0:1]
-            return list(self._cuelists.items())[page_num][1].id
+            return list(self._cuelists.items())[page_num][1]
+
+        return None
+
+    def _cue_parent_id(self, cue):
+        if cue.type in ['CueCart', 'CueList']:
+            return '[root group of cue lists]'
+
+        parent = self.cue_parent(cue)
+        if parent:
+            return parent.id
 
         return 'none'
 

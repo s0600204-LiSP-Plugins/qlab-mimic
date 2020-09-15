@@ -79,7 +79,7 @@ class CueList(Cue):
         return False
 
     def set_standby_num(self, cue_num):
-        self._layout.set_standby_index(int(cue_num))
+        self._layout.set_standby_index(cue_num)
 
     def start(self, **_):
         self._layout.go()

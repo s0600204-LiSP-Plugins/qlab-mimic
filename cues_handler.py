@@ -109,7 +109,7 @@ class CuesHandler:
         elif path[1].startsWith('P'): # CartLayout Page
             cue = self._cuelists.get(list(self._cuelists.keys())[path[1][1:]])
         else:
-            cue = cue_model.items[int(path[1])][1]
+            cue = cue_model.items[int(path[1]) - 1][1]
 
         if cue is None:
             return (QlabStatus.NotOk, None)
@@ -173,7 +173,7 @@ class CuesHandler:
             'mode': lambda: 5 if cue.type == 'CueCart' else 0, # List: 0, Groups 1-4, Cart: 5
             'name': lambda: cue.name,
             'notes': lambda: cue.description,
-            'number': lambda: str(cue.index),
+            'number': lambda: str(cue.index + 1) if isinstance(cue.index, int) else cue.index,
             'parent': lambda: self._cue_parent_id(cue),
             'playbackPosition': lambda: cue.standby_cue_num() if cue.type == 'CueList' else 'none',
             'playbackPositionId': lambda: cue.standby_cue_id() if cue.type == 'CueList' else 'none',
@@ -196,7 +196,11 @@ class CuesHandler:
 
         if path[0] == 'playbackPosition':
             if cue.type == 'CueList':
-                cue.set_standby_num(args[0])
+                try:
+                    cue_num = int(args[0]) - 1
+                except ValueError:
+                    cue_num = args[0]
+                cue.set_standby_num(cue_num)
                 return True
 
         if path[0] == 'playbackPositionId':
@@ -242,7 +246,7 @@ class CuesHandler:
     def _cue_summary(self, cue):
         cue_obj = {
             'uniqueID': cue.id, # string
-            'number': str(cue.index), # string
+            'number': str(cue.index + 1) if isinstance(cue.index, int) else cue.index, # string
             'name': cue.name, # string
             'listName': cue.name, # string
             'type': self._derive_qlab_cuetype(cue), # string

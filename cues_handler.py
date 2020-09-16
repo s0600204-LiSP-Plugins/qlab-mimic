@@ -236,29 +236,29 @@ class CuesHandler:
 
         # (Technically, 'go' should only work on CueLists)
         if path[0] == 'start' or path[0] == 'startAndAutoloadNext' or path[0] == 'go':
-            if cue.state != CueState.IsRunning:
+            if not cue.state & CueState.IsRunning:
                 cue.start(fade=True)
             return True
 
         if path[0] == 'pause' or path[0] == 'hardPause':
-            if cue.state != CueState.IsPaused:
+            if not cue.state & CueState.IsPaused:
                 cue.pause(fade=path[0] == 'pause')
             return True
 
         if path[0] == 'resume':
-            if cue.state == CueState.IsPaused:
+            if cue.state & CueState.IsPaused:
                 cue.resume(fade=True)
             return True
 
         if path[0] == 'togglePause':
-            if cue.state == CueState.IsPaused:
+            if cue.state & CueState.IsPaused:
                 cue.resume(fade=True)
-            elif cue.state != CueState.IsPaused:
+            elif not cue.state & CueState.IsPaused:
                 cue.pause(fade=True)
             return True
 
         if path[0] == 'stop' or path[0] == 'hardStop':
-            if cue.state != CueState.IsStopped:
+            if not cue.state & CueState.IsStopped:
                 cue.stop(fade=path[0] == 'stop')
             return True
 

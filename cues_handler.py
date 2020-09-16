@@ -170,7 +170,7 @@ class CuesHandler:
 
     def _cue_info_get(self, cue, path):
         return {
-            'armed': lambda: 'true',
+            'armed': lambda: True,
             'cartColumns': lambda: cue.columns if cue.type == 'CueCart' else None,
             'cartPosition': lambda: self._get_cart_position(cue) if cue.type != 'CueCart' else [0, 0],
             'cartRows': lambda: cue.rows if cue.type == 'CueCart' else None,
@@ -179,17 +179,17 @@ class CuesHandler:
             'defaultName': lambda: translate('CueName', cue.Name),
             'displayName': lambda: cue.name,
             'fileTarget': lambda: None if cue.type != 'GstMediaCue' else cue.input_uri, # @todo check the appropriate property
-            'flagged': lambda: 'false',
-            'hasCueTargets': lambda: str(cue.type in TARGETS_OTHER_CUES).lower(),
-            'hasFileTargets': lambda: str(cue.type in TARGETS_FILES).lower(),
-            'isActionRunning': lambda: str(cue.state == CueState.Running).lower(),
-            'isBroken': lambda: str(cue.state == CueState.Error).lower(),
-            'isLoaded': lambda: 'true',
-            'isOverridden': lambda: 'false', # whether a cue's output is suppressed by an override control
-            'isPanicking': lambda: 'false', # is fading out during a 'panic' (all stop)
-            'isPaused': lambda: str(cue.state == CueState.IsPaused).lower(),
-            'isRunning': lambda: str(cue.state == CueState.IsRunning).lower(),
-            'isTailingOut': lambda: 'false', # if cue has an AudioUnit which is decaying
+            'flagged': lambda: False,
+            'hasCueTargets': lambda: cue.type in TARGETS_OTHER_CUES,
+            'hasFileTargets': lambda: cue.type in TARGETS_FILES,
+            'isActionRunning': lambda: cue.state == CueState.Running,
+            'isBroken': lambda: cue.state == CueState.Error,
+            'isLoaded': lambda: True,
+            'isOverridden': lambda: False, # whether a cue's output is suppressed by an override control
+            'isPanicking': lambda: False, # is fading out during a 'panic' (all stop)
+            'isPaused': lambda: bool(cue.state & CueState.IsPaused),
+            'isRunning': lambda: bool(cue.state & CueState.IsRunning),
+            'isTailingOut': lambda: False, # if cue has an AudioUnit which is decaying
             'listName': lambda: '* {} *'.format(cue.name),
             'mode': lambda: 5 if cue.type == 'CueCart' else 0, # List: 0, Groups 1-4, Cart: 5
             'name': lambda: cue.name,

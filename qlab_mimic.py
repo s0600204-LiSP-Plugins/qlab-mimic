@@ -34,7 +34,7 @@ from lisp.ui.ui_utils import translate
 
 from .cues_handler import CuesHandler, CUE_STATE_CHANGES
 from .osc_tcp_server import OscTcpServer
-from .utility import client_id_string, QlabStatus, split_path
+from .utility import client_id_string, join_path, QlabStatus, split_path
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
@@ -120,8 +120,8 @@ class QlabMimic(Plugin):
         self._server.send(src, '/reply' + path, response)
 
     def send_update(self, path, args=[], always_send=False):
-        path[0:0] = ['', 'update', 'workspace', self._session_uuid]
-        path = '/'.join(path)
+        path[0:0] = ['update', 'workspace', self._session_uuid]
+        path = join_path(path)
         for client in self._connected_clients.values():
             if client[1] or always_send:
                 client[0].set_slip_enabled(True)
@@ -169,11 +169,12 @@ class QlabMimic(Plugin):
         path = split_path(original_path)
         if path[0] == 'workspace':
             del path[0:2]
+        return_path = join_path(path)
         if path[0] == 'cue':
             status, data = self._cues_message_handler.by_cue_number(path, args, self.app.cue_model)
         else:
             status, data = self._cues_message_handler.by_cue_id(path, args, self.app.cue_model)
-        self.send_reply(src, original_path, status, data)
+        self.send_reply(src, return_path, status, data)
 
     def _handle_cuelists(self, path, args, types, src, user_data):
          cuelists = self._cues_message_handler.get_cuelists()

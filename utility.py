@@ -35,3 +35,8 @@ def split_path(path):
     path = path.split('/')
     path.pop(0)
     return path
+
+def join_path(path):
+    path = list(path)
+    path[0:0] = [""]
+    return "/".join(path)

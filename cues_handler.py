@@ -84,8 +84,7 @@ class CuesHandler:
             # We create an object for each cart tab page
             for page in session_layout.view.pages():
                 index = session_layout.view.indexOf(page)
-                name = session_layout.view.tabTexts()[index]
-                self._cuelists.add(CueCart(session_layout, name, index))
+                self._cuelists.add(CueCart(session_layout, index))
 
     def get_cuelists(self):
         cuelists = []

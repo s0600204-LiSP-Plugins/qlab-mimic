@@ -30,12 +30,15 @@ from lisp.ui.ui_utils import translate
 
 class CueCart(Cue):
 
-    def __init__(self, layout, name, index, **kwargs):
+    def __init__(self, layout, index, **kwargs):
         super().__init__(**kwargs)
-        self.name = translate('CueName', name)
-        self.index = 'P' + str(index + 1)
-        self._index = index
+
+        # `self.index` (inherited Property) is presented to Remote Apps (as the "cue number");
+        # `self._index` is used internally within LiSP
+        self._index = -1
         self._layout = layout
+
+        self.set_index(index)
 
     @property
     def columns(self):
@@ -47,6 +50,17 @@ class CueCart(Cue):
     @property
     def rows(self):
         return self._layout.view.widget(self._index).rows
+
+    def set_index(self, index):
+        self._index = index
+
+    @property
+    def index(self):
+        return 'P' + str(self._index + 1)
+
+    @property
+    def name(self):
+        return self._layout.view.tabText(self._index)
 
     def stop(self, **_):
         self._layout.stop_all()

@@ -67,8 +67,9 @@ CUE_TYPE_MAPPING = {
 
 class CuesHandler:
 
-    def __init__(self):
+    def __init__(self, plugin):
         self._cuelists = CueModel()
+        self._plugin = plugin
         self._session_layout = None
 
     def register_cuelists(self, session_layout): # session_layout == self.app.layout @ plugin-level
@@ -81,10 +82,31 @@ class CuesHandler:
             self._cuelists.add(CueList(session_layout))
 
         elif isinstance(session_layout, CartLayout):
+            session_layout.page_added.connect(self._on_cartpage_added)
+            session_layout.page_removed.connect(self._on_cartpage_removed)
+
             # We create an object for each cart tab page
             for page in session_layout.view.pages():
                 index = session_layout.view.indexOf(page)
-                self._cuelists.add(CueCart(session_layout, index))
+                self._on_cartpage_added(index, page)
+
+    def _on_cartpage_added(self, page_index, _):
+        self._cuelists.add(CueCart(self._session_layout, page_index))
+        self._plugin.emit_workspace_updated()
+
+    def _on_cartpage_removed(self, page_index):
+        pages = list(self._cuelists.items())
+        page_removed = pages[page_index][1]
+        self._cuelists.remove(page_removed)
+
+        # Having removed the page, all subsequent ones have a new (internal) index
+        subsequent_pages = pages[page_index + 1:]
+        for page in subsequent_pages:
+            page[1].set_index(page_index)
+            self._plugin.emit_cue_updated(page[1])
+            page_index += 1
+
+        self._plugin.emit_workspace_updated()
 
     def get_cuelists(self):
         cuelists = []

@@ -58,7 +58,7 @@ class QlabMimic(Plugin):
 
         self._encoder = JSONEncoder(separators=(',', ':'))
 
-        self._cues_message_handler = CuesHandler()
+        self._cues_message_handler = CuesHandler(self)
 
         self._server = OscTcpServer(QLAB_TCP_PORT)
         self._server.register_method(self._handle_always_reply, '/alwaysReply')
@@ -71,7 +71,7 @@ class QlabMimic(Plugin):
         self._session_uuid = str(uuid4())
 
         self.app.cue_model.item_added.connect(self._on_cue_added)
-        self.app.layout.model.item_moved.connect(self._emit_workspace_updated)
+        self.app.layout.model.item_moved.connect(self.emit_workspace_updated)
         self.app.cue_model.item_removed.connect(self._on_cue_removed)
 
         if isinstance(self.app.layout, ListLayout):
@@ -86,7 +86,7 @@ class QlabMimic(Plugin):
         self._session_uuid = None
 
         self.app.cue_model.item_added.disconnect(self._on_cue_added)
-        self.app.layout.model.item_moved.disconnect(self._emit_workspace_updated)
+        self.app.layout.model.item_moved.disconnect(self.emit_workspace_updated)
         self.app.cue_model.item_removed.disconnect(self._on_cue_removed)
 
         if isinstance(self.app.layout, ListLayout):
@@ -278,30 +278,30 @@ class QlabMimic(Plugin):
         self.send_reply(src, path, QlabStatus.Ok, workspaces, send_id=False)
 
     def _on_cue_added(self, cue):
-        self._emit_workspace_updated()
+        self.emit_workspace_updated()
 
         # Emit that the parent cue has been changed
-        self._emit_cue_updated(self._cues_message_handler.cue_parent(cue))
+        self.emit_cue_updated(self._cues_message_handler.cue_parent(cue))
 
         # Set listeners for when a cue has been edited...
-        cue.properties_changed.connect(self._emit_cue_updated)
+        cue.properties_changed.connect(self.emit_cue_updated)
         # ...and when it changes state
         for state_change in CUE_STATE_CHANGES:
-            cue.__getattribute__(state_change).connect(self._emit_cue_updated)
+            cue.__getattribute__(state_change).connect(self.emit_cue_updated)
 
     def _on_cue_removed(self, cue):
-        self._emit_workspace_updated()
+        self.emit_workspace_updated()
 
         # Emit that the parent cue has been changed
-        self._emit_cue_updated(self._cues_message_handler.cue_parent(cue))
+        self.emit_cue_updated(self._cues_message_handler.cue_parent(cue))
 
         # Remove listeners for when a cue has been edited...
-        cue.properties_changed.disconnect(self._emit_cue_updated)
+        cue.properties_changed.disconnect(self.emit_cue_updated)
         # ...and when it changes state
         for state_change in CUE_STATE_CHANGES:
-            cue.__getattribute__(state_change).disconnect(self._emit_cue_updated)
+            cue.__getattribute__(state_change).disconnect(self.emit_cue_updated)
 
-    def _emit_cue_updated(self, cue):
+    def emit_cue_updated(self, cue):
         '''Sent if the cue or its state has changed'''
         self.send_update(['cue_id', cue.id])
 
@@ -312,7 +312,7 @@ class QlabMimic(Plugin):
         '''
         self.send_update(['disconnect'], always_send=True)
 
-    def _emit_workspace_updated(self, *_):
+    def emit_workspace_updated(self, *_):
         '''Sent if the cue lists for the workspace need reloading
 
         For instance when a cue is added, removed, or other aspects of a workspace are updated.

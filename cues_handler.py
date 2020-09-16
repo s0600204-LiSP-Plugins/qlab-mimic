@@ -84,6 +84,7 @@ class CuesHandler:
         elif isinstance(session_layout, CartLayout):
             session_layout.page_added.connect(self._on_cartpage_added)
             session_layout.page_removed.connect(self._on_cartpage_removed)
+            session_layout.view.page_renamed.connect(self._on_cartpage_renamed)
 
             # We create an object for each cart tab page
             for page in session_layout.view.pages():
@@ -107,6 +108,11 @@ class CuesHandler:
             page_index += 1
 
         self._plugin.emit_workspace_updated()
+
+    def _on_cartpage_renamed(self, page_number, label):
+        page = list(self._cuelists.items())[page_number][1]
+        self._plugin.emit_workspace_updated()
+        self._plugin.emit_cue_updated(page)
 
     def get_cuelists(self):
         cuelists = []

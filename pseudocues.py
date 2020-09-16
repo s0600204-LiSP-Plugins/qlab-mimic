@@ -44,7 +44,8 @@ class CueCart(Cue):
     def columns(self):
         return self._layout.view.widget(self._index).columns
 
-    def position(self, cue):
+    # [page, row, column]
+    def positionOfCue(self, cue):
         return list(self._layout.to_3d_index(int(cue.index)))
 
     @property

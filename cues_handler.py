@@ -303,7 +303,7 @@ class CuesHandler:
             return first_parent
 
         if isinstance(first_parent, CueCart):
-            page_num = first_parent.position(cue)[0:1]
+            page_num = first_parent.positionOfCue(cue)[0]
             return list(self._cuelists.items())[page_num][1]
 
         return None
@@ -328,5 +328,5 @@ class CuesHandler:
     def _get_cart_position(self, cue):
         parent = list(self._cuelists.items())[0][1]
         if isinstance(parent, CueCart):
-            return parent.position(cue)[1:]
+            return [i + 1 for i in parent.positionOfCue(cue)[1:3]]
         return [0, 0]

@@ -38,7 +38,11 @@ logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
 # Other states: next, fadein_start, fadein_end, fadeout_start, fadeout_end
 # (the latter four do not transmit `self`, so there's no easy way to tell which cue they were emitted from)
-CUE_STATE_CHANGES = ['interrupted', 'started', 'stopped', 'paused', 'error', 'error_clear', 'end']
+CUE_STATE_CHANGES = [
+    'interrupted', 'started', 'stopped', 'paused', 'error', 'error_clear', 'end',
+    'prewait_start', 'prewait_ended', 'prewait_paused', 'prewait_stopped',
+    'postwait_start', 'postwait_ended', 'postwait_paused', 'postwait_stopped',
+]
 
 TARGETS_FILES = ['GstMediaCue']
 TARGETS_OTHER_CUES = ['CollectionCue', 'IndexActionCue', 'SeekCue', 'VolumeControl']

@@ -176,12 +176,13 @@ class CuesHandler:
 
     def _cue_info_get(self, cue, path):
         return {
+            'actionElapsed': lambda: cue.current_time() / 1000,
             'armed': lambda: True,
             'cartColumns': lambda: cue.columns if cue.type == 'CueCart' else None,
             'cartPosition': lambda: self._get_cart_position(cue) if cue.type != 'CueCart' else [0, 0],
             'cartRows': lambda: cue.rows if cue.type == 'CueCart' else None,
             'children': lambda: self._cue_children(cue),
-            'currentDuration': lambda: cue.duration,
+            'currentDuration': lambda: cue.duration / 1000,
             'defaultName': lambda: translate('CueName', cue.Name),
             'displayName': lambda: cue.name,
             'fileTarget': lambda: None if cue.type != 'GstMediaCue' else cue.input_uri, # @todo check the appropriate property
@@ -202,8 +203,13 @@ class CuesHandler:
             'notes': lambda: cue.description,
             'number': lambda: str(cue.index + 1) if isinstance(cue.index, int) else cue.index,
             'parent': lambda: self._cue_parent_id(cue),
+            'percentActionElapsed': lambda: cue.current_time() / cue.duration if cue.duration else 0,
+            'percentPreWaitElapsed': lambda: cue.prewait_time() / cue.pre_wait if cue.pre_wait else 0,
+            'percentPostWaitElapsed': lambda: cue.postwait_time() / cue.post_wait if cue.post_wait else 0,
             'playbackPosition': lambda: cue.standby_cue_num() if cue.type == 'CueList' else 'none',
             'playbackPositionId': lambda: cue.standby_cue_id() if cue.type == 'CueList' else 'none',
+            'preWait': lambda: cue.pre_wait,
+            'postWait': lambda: cue.post_wait,
             'type': lambda: self._derive_qlab_cuetype(cue),
             'uniqueID': lambda: cue.id,
         }.get(path[0], lambda: None)()

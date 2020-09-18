@@ -24,6 +24,7 @@
 
 from ast import literal_eval
 import logging
+import re
 
 from lisp.cues.cue import CueState
 from lisp.cues.cue_model import CueModel
@@ -31,6 +32,7 @@ from lisp.plugins.cart_layout.layout import CartLayout
 from lisp.plugins.list_layout.layout import ListLayout
 from lisp.ui.ui_utils import translate
 
+from .colour import find_nearest_colour
 from .pseudocues import CueCart, CueList
 from .utility import QlabStatus
 
@@ -186,6 +188,7 @@ class CuesHandler:
             'cartPosition': lambda: self._get_cart_position(cue) if cue.type != 'CueCart' else [0, 0],
             'cartRows': lambda: cue.rows if cue.type == 'CueCart' else None,
             'children': lambda: self._cue_children(cue),
+            'colorName': lambda: self._derive_qlab_colour(cue),
             'currentDuration': lambda: cue.duration / 1000,
             'defaultName': lambda: translate('CueName', cue.Name),
             'displayName': lambda: cue.name,
@@ -287,7 +290,7 @@ class CuesHandler:
             'name': cue.name, # string
             'listName': cue.name, # string
             'type': self._derive_qlab_cuetype(cue), # string
-            'colorName': 'none', # string
+            'colorName': self._derive_qlab_colour(cue), # string
             'flagged': 'false', # number when setting, string when returning
             'armed': 'true', # number when setting, string when returning
         }
@@ -333,6 +336,17 @@ class CuesHandler:
             return parent.id
 
         return 'none'
+
+    def _derive_qlab_colour(self, cue):
+        colour = re.search(r'background:#([0-9A-Fa-f]{6});', cue.stylesheet)
+        if not colour:
+            return 'none'
+        colour = colour.group(1)
+        return find_nearest_colour((
+            int(colour[0:2], 16),
+            int(colour[2:4], 16),
+            int(colour[4:6], 16)
+        ))[1]
 
     def _derive_qlab_cuetype(self, cue):
         cue_type = CUE_TYPE_MAPPING.get(cue.type, None)

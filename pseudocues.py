@@ -40,6 +40,9 @@ class CueCart(Cue):
 
         self.set_index(index)
 
+    def deinit(self):
+        del self._layout
+
     @property
     def columns(self):
         return self._layout.view.widget(self._index).columns
@@ -73,6 +76,9 @@ class CueList(Cue):
         self.name = translate('CueName', 'Main Cue List')
         self.index = 'L'
         self._layout = layout
+
+    def deinit(self):
+        del self._layout
 
     def standby_cue_id(self):
         cue_num = self._layout.standby_index()

@@ -92,6 +92,8 @@ class QlabMimic(Plugin):
         if isinstance(self.app.layout, ListLayout):
             self.app.layout.view.listView.currentItemChanged.disconnect(self._emit_playback_head_updated)
 
+        self._cues_message_handler.deregister_cuelists()
+
     @property
     def server(self):
         return self._server

@@ -79,7 +79,6 @@ class CuesHandler:
         self._session_layout = None
 
     def register_cuelists(self, session_layout): # session_layout == self.app.layout @ plugin-level
-        self._cuelists.reset()
         self._session_layout = session_layout
 
         if isinstance(session_layout, ListLayout):
@@ -96,6 +95,11 @@ class CuesHandler:
             for page in session_layout.view.pages():
                 index = session_layout.view.indexOf(page)
                 self._on_cartpage_added(index, page)
+
+    def deregister_cuelists(self):
+        for cuelist in self._cuelists:
+            cuelist.deinit()
+        self._cuelists.reset()
 
     def _on_cartpage_added(self, page_index, _):
         self._cuelists.add(CueCart(self._session_layout, page_index))

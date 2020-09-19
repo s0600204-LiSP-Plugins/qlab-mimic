@@ -71,7 +71,7 @@ class QlabMimic(Plugin):
         self._session_uuid = str(uuid4())
 
         self.app.cue_model.item_added.connect(self._on_cue_added)
-        self.app.layout.model.item_moved.connect(self.emit_workspace_updated)
+        self.app.layout.model.item_moved.connect(self._on_cue_moved)
         self.app.cue_model.item_removed.connect(self._on_cue_removed)
 
         if isinstance(self.app.layout, ListLayout):
@@ -86,7 +86,7 @@ class QlabMimic(Plugin):
         self._session_uuid = None
 
         self.app.cue_model.item_added.disconnect(self._on_cue_added)
-        self.app.layout.model.item_moved.disconnect(self.emit_workspace_updated)
+        self.app.layout.model.item_moved.disconnect(self._on_cue_moved)
         self.app.cue_model.item_removed.disconnect(self._on_cue_removed)
 
         if isinstance(self.app.layout, ListLayout):
@@ -303,6 +303,20 @@ class QlabMimic(Plugin):
         # ...and when it changes state
         for state_change in CUE_STATE_CHANGES:
             cue.__getattribute__(state_change).disconnect(self.emit_cue_updated)
+
+    def _on_cue_moved(self, old_index, new_index):
+        cue = self.app.layout.model.item(new_index)
+
+        self.emit_workspace_updated()
+
+        # Emit that the parent cue(s) have been changed
+        self.emit_cue_updated(self._cues_message_handler.cue_parent(cue))
+        if not isinstance(self.app.layout, ListLayout):
+            # In case cue has been moved from one page to another
+            old_page_num = self.app.layout.to_3d_index(old_index)[0]
+            new_page_num = self.app.layout.to_3d_index(new_index)[0]
+            if old_page_num != new_page_num:
+                self.emit_cue_updated(self._cues_message_handler.cart_page(old_page_num))
 
     def emit_cue_updated(self, cue):
         '''Sent if the cue or its state has changed'''

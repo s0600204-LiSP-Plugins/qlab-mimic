@@ -346,6 +346,9 @@ class CuesHandler:
 
         return None
 
+    def cart_page(self, page_num):
+        return list(self._cuelists.items())[page_num][1]
+
     def _cue_parent_id(self, cue):
         if cue.type in ['CueCart', 'CueList']:
             return '[root group of cue lists]'

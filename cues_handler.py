@@ -132,7 +132,7 @@ class CuesHandler:
         self._plugin.emit_workspace_updated()
 
     def _on_cartpage_renamed(self, page_number, label):
-        page = list(self._cuelists.items())[page_number][1]
+        page = self.cuelist(page_number)
         self._plugin.emit_workspace_updated()
         self._plugin.emit_cue_updated(page)
 
@@ -154,9 +154,9 @@ class CuesHandler:
         # determine cue based on cue number
         cue = None
         if path[1] == 'L': # ListLayout CueList
-            cue = list(self._cuelists.items())[0][1]
+            cue = self.cuelist(0)
         elif path[1].startsWith('P'): # CartLayout Page
-            cue = self._cuelists.get(list(self._cuelists.keys())[path[1][1:]])
+            cue = self.cuelist(int(path[1][1:]) - 1)
         else:
             cue = cue_model.items[int(path[1]) - 1][1]
 
@@ -336,18 +336,17 @@ class CuesHandler:
         return cues
 
     def cue_parent(self, cue):
-        first_parent = list(self._cuelists.items())[0][1]
-        if isinstance(first_parent, CueList):
-            return first_parent
+        if isinstance(self._session_layout, ListLayout):
+            return self.cuelist(0)
 
-        if isinstance(first_parent, CueCart):
-            page_num = first_parent.positionOfCue(cue)[0]
-            return list(self._cuelists.items())[page_num][1]
+        if isinstance(self._session_layout, CartLayout):
+            page_num = self._session_layout.to_3d_index(int(cue.index))[0]
+            return self.cuelist(page_num)
 
         return None
 
-    def cart_page(self, page_num):
-        return list(self._cuelists.items())[page_num][1]
+    def cuelist(self, cuelist_number):
+        return list(self._cuelists.items())[cuelist_number][1]
 
     def _cue_parent_id(self, cue):
         if cue.type in ['CueCart', 'CueList']:
@@ -378,9 +377,8 @@ class CuesHandler:
         return cue_type
 
     def _get_cart_position(self, cue):
-        parent = list(self._cuelists.items())[0][1]
-        if isinstance(parent, CueCart):
-            return [i + 1 for i in parent.positionOfCue(cue)[1:3]]
+        if isinstance(self._session_layout, CartLayout):
+            return [i + 1 for i in self._session_layout.to_3d_index(int(cue.index))[1:3]]
         return [0, 0]
 
     def _get_cue_target(self, cue):

@@ -316,7 +316,7 @@ class QlabMimic(Plugin):
             old_page_num = self.app.layout.to_3d_index(old_index)[0]
             new_page_num = self.app.layout.to_3d_index(new_index)[0]
             if old_page_num != new_page_num:
-                self.emit_cue_updated(self._cues_message_handler.cart_page(old_page_num))
+                self.emit_cue_updated(self._cues_message_handler.cuelist(old_page_num))
 
     def emit_cue_updated(self, cue):
         '''Sent if the cue or its state has changed'''

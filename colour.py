@@ -45,86 +45,108 @@ Links:
 
 # The colours QLab uses.
 #
-# Names were discovered by comparing against the list of colours compiled by Randall Munroe (of
-# xkcd), obtainable from https://blog.xkcd.com/2010/05/03/color-survey-results/ (License: CC-0).
+# Names were initially discovered by comparing against the list of colours compiled by Randall
+# Munroe (of xkcd), obtainable from https://blog.xkcd.com/2010/05/03/color-survey-results/
+# (License: CC-0).
 #
-# RGB values are also taken from the survey, and as such might not match QLab exactly.
+# Further colours were discovered by finding a screenshot online that claimed to show them:
+# https://alspr.tumblr.com/post/173661838363/turns-out-qlab-has-a-bunch-of-hidden-colors-up
+#
+# RGB values are taken from that screenshot.
 #
 # Note: We don't provide a value for QLab colour 'none', as that's unnecessary - if a user
 #       hasn't set (or has cleared) a colour in LiSP, then `find_nearest_colour()` isn't called.
-AVOCADO    = ((144, 177,  52), 'avocado')
-BLUE       = ((  3,  67, 233), 'blue')
-CELADON    = ((190, 253, 183), 'celadon')
-CERULEAN   = ((  4, 133, 209), 'cerulean')
-CHARTREUSE = ((193, 248,  10), 'chartreuse')
-CORAL      = ((252,  90,  80), 'coral')
-ECRU       = ((254, 255, 202), 'ecru')
-FUCHSIA    = ((237,  13, 217), 'fuchsia')
-GREEN      = (( 21, 176,  26), 'green')
-GREY       = ((146, 149, 145), 'grey')
-INDIGO     = (( 56,   2, 130), 'indigo')
-LILAC      = ((206, 162, 253), 'lilac')
-MAIZE      = ((244, 208,  84), 'maize')
-MAUVE      = ((174, 113, 129), 'mauve')
-OCHRE      = ((191, 144,   5), 'ochre')
-OLIVE      = ((110, 117,  14), 'olive')
-ORANGE     = ((249, 115,   6), 'orange')
-PUCE       = ((165, 126,  82), 'puce')
-PURPLE     = ((126,  30, 156), 'purple')
-RED        = ((229,   0,   0), 'red')
-SAGE       = ((135, 174, 115), 'sage')
-SCARLET    = ((190,   1,  25), 'scarlet')
-TAUPE      = ((185, 162, 129), 'taupe')
-VIRIDIAN   = (( 30, 145, 103), 'viridian')
-YELLOW     = ((255, 255,  20), 'yellow')
+AVOCADO      = ((105, 145,   3), 'avocado')
+BASTARDAMBER = ((255, 211, 192), 'bastardamber')
+BISQUE       = ((254, 233, 207), 'bisque')
+BLUE         = (( 82, 115, 224), 'blue')
+CELADON      = ((183, 229, 190), 'celadon')
+CERULEAN     = ((  0, 142, 182), 'cerulean')
+CHARTREUSE   = ((229, 251,   2), 'chartreuse')
+CORAL        = ((254, 147,  98), 'coral')
+ECRU         = ((206, 190, 146), 'ecru')
+FUCHSIA      = ((254, 101, 254), 'fuchsia')
+FULVOUS      = ((235, 151,   1), 'fulvous')
+GLAUCOUS     = ((113, 148, 192), 'glaucous')
+GREEN        = ((  0, 209,  46), 'green')
+GREY         = ((160, 156, 169), 'grey')
+INDIGO       = ((110, 107, 170), 'indigo')
+LILAC        = ((207, 175, 206), 'lilac')
+MAIZE        = ((249, 234, 109), 'maize')
+MAUVE        = ((231, 194, 255), 'mauve')
+OCHRE        = ((216, 137,  43), 'ochre')
+OLIVE        = ((145, 144,   0), 'olive')
+ORANGE       = ((254, 165,   2), 'orange')
+PUCE         = ((215, 155, 170), 'puce')
+PURPLE       = ((167,  43, 192), 'purple')
+RED          = ((255,  75,  66), 'red')
+RUFOUS       = ((185,  46,   4), 'rufous')
+SAGE         = ((200, 196, 156), 'sage')
+SCARLET      = ((254,  65,  68), 'scarlet')
+SEAFOAMGREEN = ((206, 230, 202), 'seafoamgreen')
+SKYBLUE      = ((153, 215, 239), 'skyblue')
+TAUPE        = ((193, 155, 127), 'taupe')
+VERDIGRIS    = (( 82, 190, 188), 'verdigris')
+VERMILION    = ((234,  90,  68), 'vermilion')
+VIRIDIAN     = (( 80, 145, 127), 'viridian')
+YELLOW       = ((249, 231,  30), 'yellow')
 
 # For each level, sort by axis
 # r -> g -> b -> r -> [...]
-TREE = (TAUPE,
-	(PUCE,
-		(INDIGO,
-			(OLIVE,
-				None,
-				(MAUVE, None, None)
-			),
-			(PURPLE,
-				(BLUE, None, None),
-				None,
-			)
-		),
-		(VIRIDIAN,
-			(GREEN,
-				None,
-				(AVOCADO, None, None)
-			),
-			(SAGE,
-				(CERULEAN, None, None),
-				(GREY, None, None)
-			)
-		)
-	),
-	(OCHRE,
-		(SCARLET,
-			(RED,
-				None,
-				(ORANGE, None, None)
-			),
-			(CORAL,
-				(FUCHSIA, None, None),
-				None
-			)
-		),
-		(MAIZE,
-			(CHARTREUSE,
-				None,
-				(YELLOW, None, None)
-			),
-			(LILAC,
-				(CELADON, None, None),
-				(ECRU, None, None)
-			)
-		)
-	)
+TREE = (ECRU,
+    (VIRIDIAN,
+        (INDIGO,
+            (OLIVE,
+                (AVOCADO, None, None),
+                (RUFOUS, None, None)
+            ),
+            (BLUE,
+                (CERULEAN, None, None),
+                (PURPLE, None, None)
+            ),
+        ),
+        (GREY,
+            (TAUPE,
+                (GREEN, None, None),
+                (SAGE, None, None)
+            ),
+            (GLAUCOUS,
+                (VERDIGRIS, None, None),
+                (SKYBLUE,
+                    None,
+                    (CELADON,  None, None)
+                )
+            )
+        )
+    ),
+    (ORANGE,
+        (RED,
+            (FULVOUS,
+                (OCHRE, None, None),
+                (SCARLET, None, None)
+            ),
+            (VERMILION,
+                (PUCE, None, None),
+                (FUCHSIA,
+                    None,
+                    (CORAL, None, None)
+                )
+            )
+        ),
+        (BASTARDAMBER,
+            (YELLOW,
+                (CHARTREUSE, None, None),
+                (MAIZE, None, None)
+            ),
+            (LILAC,
+                (SEAFOAMGREEN, None, None),
+                (MAUVE,
+                    None,
+                    (BISQUE, None, None)
+                )
+            )
+        )
+    )
 )
 
 def distance_3d(colA, colB):

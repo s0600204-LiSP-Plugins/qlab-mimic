@@ -26,7 +26,7 @@ from ast import literal_eval
 import logging
 import re
 
-from lisp.cues.cue import CueState
+from lisp.cues.cue import CueNextAction, CueState
 from lisp.cues.cue_model import CueModel
 from lisp.plugins.cart_layout.layout import CartLayout
 from lisp.plugins.list_layout.layout import ListLayout
@@ -69,6 +69,18 @@ CUE_TYPE_MAPPING = {
     'SeekCue': None,
     'StopAll': None,
     'VolumeControl': 'fade',
+}
+
+# QLab values:
+#   0: No Continue;
+#   1: Auto Continue;
+#   2: Auto Follow
+CUE_NEXT_ACTION_MAPPING = {
+    CueNextAction.DoNothing: 0,
+    CueNextAction.SelectAfterEnd: 2,
+    CueNextAction.SelectAfterWait: 1,
+    CueNextAction.TriggerAfterEnd: 2,
+    CueNextAction.TriggerAfterWait: 1,
 }
 
 class CuesHandler:
@@ -193,6 +205,7 @@ class CuesHandler:
             'cartRows': lambda: cue.rows if cue.type == 'CueCart' else None,
             'children': lambda: self._cue_children(cue),
             'colorName': lambda: self._derive_qlab_colour(cue),
+            'continueMode': lambda: CUE_NEXT_ACTION_MAPPING.get(cue.next_action, 0),
             'cueTargetNumber': lambda: self._get_cue_target_num(cue),
             'currentDuration': lambda: cue.duration / 1000,
             'currentCueTarget': lambda: self._get_cue_target(cue),

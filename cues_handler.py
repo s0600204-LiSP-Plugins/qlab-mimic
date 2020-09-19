@@ -193,7 +193,9 @@ class CuesHandler:
             'cartRows': lambda: cue.rows if cue.type == 'CueCart' else None,
             'children': lambda: self._cue_children(cue),
             'colorName': lambda: self._derive_qlab_colour(cue),
+            'cueTargetNumber': lambda: self._get_cue_target_num(cue),
             'currentDuration': lambda: cue.duration / 1000,
+            'currentCueTarget': lambda: self._get_cue_target(cue),
             'defaultName': lambda: translate('CueName', cue.Name),
             'displayName': lambda: cue.name,
             'fileTarget': lambda: None if cue.type != 'GstMediaCue' else cue.input_uri, # @todo check the appropriate property
@@ -364,3 +366,43 @@ class CuesHandler:
         if isinstance(parent, CueCart):
             return [i + 1 for i in parent.positionOfCue(cue)[1:3]]
         return [0, 0]
+
+    def _get_cue_target(self, cue):
+        if cue.type not in TARGETS_OTHER_CUES:
+            return ''
+
+        if cue.type == 'CollectionCue':
+            # Contains multiple targets, so return the first
+            return cue.targets[0][0] if cue.targets else ''
+
+        if cue.type == 'IndexActionCue':
+            target_cue_num = cue.target_index
+            if cue.relative:
+                target_cue_num += cue.index
+            return list(self._session_layout.model.model.keys())[target_cue_num]
+
+        # SeekCue, VolumeControl
+        return cue.target_id if cue.target_id else ''
+
+    def _get_cue_target_num(self, cue):
+        if cue.type not in TARGETS_OTHER_CUES:
+            return ''
+
+        if cue.type == 'CollectionCue':
+            # For QLab Remote, this is just an arbitrary string, so
+            # it doesn't matter if it isn't a "real" cue number.
+            targets = []
+            for target in cue.targets:
+                targets.append(str(self._session_layout.model.model.get(target[0]).index + 1))
+            return ", ".join(targets)
+
+        if cue.type == 'IndexActionCue':
+            target_cue_num = cue.target_index
+            if cue.relative:
+                target_cue_num += cue.index
+            return str(target_cue_num + 1)
+
+        # SeekCue, VolumeControl
+        if not cue.target_id:
+            return ''
+        return str(self._session_layout.model.model.get(cue.target_id).index + 1)

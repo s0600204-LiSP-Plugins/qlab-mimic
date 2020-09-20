@@ -420,3 +420,20 @@ class CuesHandler:
         if not cue.target_id:
             return ''
         return str(self._session_layout.model.model.get(cue.target_id).index + 1)
+
+    def get_currently_playing(self, include_paused):
+        cues = []
+        if isinstance(self._session_layout, ListLayout):
+            for cue in self._session_layout._running_model:
+                if not include_paused and cue.state & CueState.IsPaused:
+                    continue
+                cues.append(self._cue_summary(cue))
+            return cues
+
+        if isinstance(self._session_layout, CartLayout):
+            for cue in self._session_layout.model:
+                if cue.state & CueState.IsRunning or include_paused and cue.state & CueState.IsPaused:
+                    cues.append(self._cue_summary(cue))
+            return cues
+
+        return cues

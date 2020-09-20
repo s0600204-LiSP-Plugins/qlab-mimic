@@ -197,6 +197,14 @@ class QlabMimic(Plugin):
         self.app.layout.go()
         self.send_reply(src, path, QlabStatus.Ok)
 
+    def _handle_runningCues(self, path, args, types, src, user_data):
+        self._cues_message_handler.get_currently_playing(False)
+        self.send_reply(src, path, QlabStatus.Ok, cues)
+
+    def _handle_runningOrPausedCues(self, path, args, types, src, user_data):
+        cues = self._cues_message_handler.get_currently_playing(True)
+        self.send_reply(src, path, QlabStatus.Ok, cues)
+
     def _handle_selectionIsPlayhead(self, path, args, types, src, user_data):
         if isinstance(self.app.layout, ListLayout):
             if args:
@@ -249,6 +257,8 @@ class QlabMimic(Plugin):
             'disconnect': self._handle_disconnect,
             'doubleGoWindowRemaining': self._handle_doubleGoWindowRemaining,
             'go': self._handle_go,
+            'runningCues': self._handle_runningCues,
+            'runningOrPausedCues': self._handle_runningOrPausedCues,
             'selectionIsPlayhead': self._handle_selectionIsPlayhead,
             'showMode': self._handle_showMode,
             'stop': self._handle_stop,

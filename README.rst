@@ -79,6 +79,11 @@ pyliblo
   project's README to build and install. Depending on your chosen flavour of
   Linux, you may need to remove your distribution's package first.
 
+python-zeroconf
+  Installable from pypi: https://pypi.org/project/zeroconf/, or from GitHub:
+  https://github.com/jstasiak/python-zeroconf. Your distribution might also have
+  a suitable package in its repositories.
+
 
 Installation
 """"""""""""

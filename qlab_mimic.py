@@ -34,11 +34,11 @@ from lisp.ui.ui_utils import translate
 
 from .cues_handler import CuesHandler, CUE_STATE_CHANGES
 from .osc_tcp_server import OscTcpServer
+from .service_announcer import QLAB_TCP_PORT, QLabServiceAnnouncer
 from .utility import client_id_string, join_path, QlabStatus, split_path
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
-QLAB_TCP_PORT = 53000
 QLAB_VERSION = '4.3'
 
 class QlabMimic(Plugin):
@@ -65,6 +65,9 @@ class QlabMimic(Plugin):
         self._server.register_method(self._handle_workspaces, '/workspaces')
         self._server.start()
         self._server.new_message.connect(self._generic_handler)
+
+        self._server_announcer = QLabServiceAnnouncer()
+        self._server_announcer.start()
 
     def _on_session_initialised(self, session):
         self._session_name = session.name()
@@ -104,6 +107,7 @@ class QlabMimic(Plugin):
     def finalize(self):
         logger.debug('Shutting down QLab server')
         self.terminate()
+        self._server_announcer.terminate()
 
     def send_reply(self, src, path, status, data=None, send_id=True):
         client_id = client_id_string(src)

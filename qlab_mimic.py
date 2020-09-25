@@ -30,15 +30,17 @@ from uuid import uuid4
 from lisp.core.plugin import Plugin
 from lisp.core.util import get_lan_ip
 from lisp.plugins.list_layout.layout import ListLayout
+from lisp.ui.settings.app_configuration import AppConfigurationDialog
 from lisp.ui.ui_utils import translate
 
 from .cues_handler import CuesHandler, CUE_STATE_CHANGES
 from .osc_tcp_server import OscTcpServer
+from .service_announcer import QLAB_TCP_PORT, QLabServiceAnnouncer
+from .settings import QlabMimicSettings
 from .utility import client_id_string, join_path, QlabStatus, split_path
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
-QLAB_TCP_PORT = 53000
 QLAB_VERSION = '4.3'
 
 class QlabMimic(Plugin):
@@ -65,6 +67,20 @@ class QlabMimic(Plugin):
         self._server.register_method(self._handle_workspaces, '/workspaces')
         self._server.start()
         self._server.new_message.connect(self._generic_handler)
+
+        self._server_announcer = QLabServiceAnnouncer()
+
+        AppConfigurationDialog.registerSettingsPage(
+            'plugins.qlab_mimic', QlabMimicSettings, self.Config)
+
+        self.Config.updated.connect(self._actualize_config)
+        self._actualize_config(self.Config)
+
+    def _actualize_config(self, _):
+        if self.Config.get("service_announcement", True):
+            self._server_announcer.start()
+        else:
+            self._server_announcer.stop()
 
     def _on_session_initialised(self, session):
         self._session_name = session.name()
@@ -104,6 +120,7 @@ class QlabMimic(Plugin):
     def finalize(self):
         logger.debug('Shutting down QLab server')
         self.terminate()
+        self._server_announcer.terminate()
 
     def send_reply(self, src, path, status, data=None, send_id=True):
         client_id = client_id_string(src)

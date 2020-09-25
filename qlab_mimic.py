@@ -139,7 +139,7 @@ class QlabMimic(Plugin):
             'go': self._handle_go,
             'stop': self._handle_stop,
             'updates': self._handle_updates,
-            'version': lambda *_: QLAB_VERSION,
+            'version': self._handle_version,
             'workspace': self._handle_workspace,
         }
 
@@ -240,6 +240,9 @@ class QlabMimic(Plugin):
             return
         self._connected_clients[client_id][1] = bool(args[0])
         self.send_reply(src, original_path, QlabStatus.Ok)
+
+    def _handle_version(self, original_path, args, types, src, user_data):
+        self.send_reply(src, original_path, QlabStatus.Ok, QLAB_VERSION)
 
     def _handle_workspace(self, original_path, args, types, src, user_data):
         path = split_path(original_path)

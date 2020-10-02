@@ -102,6 +102,9 @@ class OscTcpServer:
             logger.info(translate("OscServerInfo", "OSC server stopped"))
 
     def send(self, address, path, *args):
+        if not address.hostname:
+            return
+
         with self._lock:
             if self._running:
                 self._srv.send(address, path, *args)

@@ -24,6 +24,7 @@
 
 from json import JSONEncoder
 import logging
+import time
 from uuid import uuid4
 
 # pylint: disable=import-error
@@ -42,6 +43,7 @@ from .utility import client_id_string, join_path, QlabStatus, split_path
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
 QLAB_VERSION = '4.3'
+MESSAGE_RECV_TIMEOUT = 0.1 # seconds
 
 class QlabMimic(Plugin):
     """LiSP pretends to be QLab for the purposes of basic OSC control"""
@@ -57,6 +59,7 @@ class QlabMimic(Plugin):
         self._session_name = None
         self._session_uuid = None
         self._connected_clients = {}
+        self._last_messages = {}
 
         self._encoder = JSONEncoder(separators=(',', ':'))
 
@@ -147,6 +150,17 @@ class QlabMimic(Plugin):
                 self._server.send(client[0], path, *args)
 
     def _generic_handler(self, original_path, args, types, src, user_data):
+        if (src.url in self._last_messages
+            and original_path == self._last_messages[src.url][0]
+            and time.time() < self._last_messages[src.url][1] + MESSAGE_RECV_TIMEOUT
+        ):
+            logger.debug(
+                f"Duplicate message received too soon after the last, ignoring. "\
+                f"({src.hostname} :: {original_path})"
+            )
+            return
+
+        self._last_messages[src.url] = [original_path, time.time()]
         path = split_path(original_path)
 
         handlers = {

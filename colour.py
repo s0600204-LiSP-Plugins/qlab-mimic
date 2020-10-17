@@ -52,48 +52,50 @@ Links:
 # Further colours were discovered by finding a screenshot online that claimed to show them:
 # https://alspr.tumblr.com/post/173661838363/turns-out-qlab-has-a-bunch-of-hidden-colors-up
 #
-# RGB values are taken from that screenshot.
+# Regrettably that screenshot suffers from jpeg artifacts, making accurate RGB value extraction
+# difficult. Thus a computer capable of running QLab was located, and a fresh screenshot (in
+# lossless PNG format) was created. The RGB values below are taken from that.
 #
 # Note: We don't provide a value for QLab colour 'none', as that's unnecessary - if a user
 #       hasn't set (or has cleared) a colour in LiSP, then `find_nearest_colour()` isn't called.
-AVOCADO      = ((105, 145,   3), 'avocado')
-BASTARDAMBER = ((255, 211, 192), 'bastardamber')
-BISQUE       = ((254, 233, 207), 'bisque')
+AVOCADO      = ((103, 146,   0), 'avocado')
+BASTARDAMBER = ((255, 210, 193), 'bastardamber')
+BISQUE       = ((255, 233, 207), 'bisque')
 BLUE         = (( 82, 115, 224), 'blue')
-CELADON      = ((183, 229, 190), 'celadon')
+CELADON      = ((185, 229, 189), 'celadon')
 CERULEAN     = ((  0, 142, 182), 'cerulean')
-CHARTREUSE   = ((229, 251,   2), 'chartreuse')
-CORAL        = ((254, 147,  98), 'coral')
+CHARTREUSE   = ((228, 251,   0), 'chartreuse')
+CORAL        = ((255, 147,  97), 'coral')
 ECRU         = ((206, 190, 146), 'ecru')
-FUCHSIA      = ((254, 101, 254), 'fuchsia')
-FULVOUS      = ((235, 151,   1), 'fulvous')
-GLAUCOUS     = ((113, 148, 192), 'glaucous')
+FUCHSIA      = ((255, 101, 255), 'fuchsia')
+FULVOUS      = ((235, 151,   0), 'fulvous')
+GLAUCOUS     = ((113, 146, 192), 'glaucous')
 GREEN        = ((  0, 209,  46), 'green')
 GREY         = ((160, 156, 169), 'grey')
-INDIGO       = ((110, 107, 170), 'indigo')
-LILAC        = ((207, 175, 206), 'lilac')
-MAIZE        = ((249, 234, 109), 'maize')
-MAUVE        = ((231, 194, 255), 'mauve')
-OCHRE        = ((216, 137,  43), 'ochre')
-OLIVE        = ((145, 144,   0), 'olive')
-ORANGE       = ((254, 165,   2), 'orange')
-PUCE         = ((215, 155, 170), 'puce')
-PURPLE       = ((167,  43, 192), 'purple')
-RED          = ((255,  75,  66), 'red')
-RUFOUS       = ((185,  46,   4), 'rufous')
-SAGE         = ((200, 196, 156), 'sage')
-SCARLET      = ((254,  65,  68), 'scarlet')
-SEAFOAMGREEN = ((206, 230, 202), 'seafoamgreen')
-SKYBLUE      = ((153, 215, 239), 'skyblue')
-TAUPE        = ((193, 155, 127), 'taupe')
-VERDIGRIS    = (( 82, 190, 188), 'verdigris')
-VERMILION    = ((234,  90,  68), 'vermilion')
-VIRIDIAN     = (( 80, 145, 127), 'viridian')
+INDIGO       = ((110, 106, 169), 'indigo')
+LILAC        = ((206, 176, 206), 'lilac')
+MAIZE        = ((249, 234, 111), 'maize')
+MAUVE        = ((231, 193, 255), 'mauve')
+OCHRE        = ((215, 138,  44), 'ochre')
+OLIVE        = ((146, 144,   0), 'olive')
+ORANGE       = ((255, 166,   0), 'orange')
+PUCE         = ((215, 155, 169), 'puce')
+PURPLE       = ((169,  43, 192), 'purple')
+RED          = ((255,  76,  66), 'red')
+RUFOUS       = ((185,  46,   2), 'rufous')
+SAGE         = ((200, 195, 156), 'sage')
+SCARLET      = ((255,  65,  68), 'scarlet')
+SEAFOAMGREEN = ((205, 230, 202), 'seafoamgreen')
+SKYBLUE      = ((151, 216, 239), 'skyblue')
+TAUPE        = ((192, 156, 127), 'taupe')
+VERDIGRIS    = (( 81, 190, 188), 'verdigris')
+VERMILION    = ((235,  91,  67), 'vermilion')
+VIRIDIAN     = (( 80, 146, 127), 'viridian')
 YELLOW       = ((249, 231,  30), 'yellow')
 
 # For each level, sort by axis
 # r -> g -> b -> r -> [...]
-TREE = (ECRU,
+TREE = (SEAFOAMGREEN,
     (VIRIDIAN,
         (INDIGO,
             (OLIVE,
@@ -103,7 +105,7 @@ TREE = (ECRU,
             (BLUE,
                 (CERULEAN, None, None),
                 (PURPLE, None, None)
-            ),
+            )
         ),
         (GREY,
             (TAUPE,
@@ -114,18 +116,18 @@ TREE = (ECRU,
                 (VERDIGRIS, None, None),
                 (SKYBLUE,
                     None,
-                    (CELADON,  None, None)
+                    (CELADON, None, None)
                 )
             )
         )
     ),
     (ORANGE,
-        (RED,
+        (VERMILION,
             (FULVOUS,
                 (OCHRE, None, None),
-                (SCARLET, None, None)
+                (RED, None, None)
             ),
-            (VERMILION,
+            (SCARLET,
                 (PUCE, None, None),
                 (FUCHSIA,
                     None,
@@ -133,14 +135,14 @@ TREE = (ECRU,
                 )
             )
         ),
-        (BASTARDAMBER,
+        (ECRU,
             (YELLOW,
                 (CHARTREUSE, None, None),
                 (MAIZE, None, None)
             ),
-            (LILAC,
-                (SEAFOAMGREEN, None, None),
-                (MAUVE,
+            (MAUVE,
+                (LILAC, None, None),
+                (BASTARDAMBER,
                     None,
                     (BISQUE, None, None)
                 )

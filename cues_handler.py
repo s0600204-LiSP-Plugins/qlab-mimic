@@ -219,7 +219,7 @@ class CuesHandler:
             'isBroken': lambda: cue.state == CueState.Error,
             'isLoaded': lambda: True,
             'isOverridden': lambda: False, # whether a cue's output is suppressed by an override control
-            'isPanicking': lambda: False, # is fading out during a 'panic' (all stop)
+            'isPanicking': lambda: bool(cue.state & CueState.Interrupt), # is fading out during a 'panic' (all stop)
             'isPaused': lambda: bool(cue.state & CueState.IsPaused),
             'isRunning': lambda: bool(cue.state & CueState.IsRunning),
             'isTailingOut': lambda: False, # if cue has an AudioUnit which is decaying
@@ -298,6 +298,13 @@ class CuesHandler:
         if path[0] == 'stop' or path[0] == 'hardStop':
             if not cue.state & CueState.IsStopped:
                 cue.stop(fade=path[0] == 'stop')
+            return True
+
+        if path[0] == 'panic' or path[0] == 'panicInTime':
+            # panicInTime has an argument - a fade time
+            # For now, we ignore it
+            if not cue.state & CueState.IsStopped:
+                cue.interrupt(fade=True)
             return True
 
         return False

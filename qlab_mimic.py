@@ -34,13 +34,14 @@ from lisp.ui.ui_utils import translate
 
 from .cues_handler import CuesHandler, CUE_STATE_CHANGES
 from .osc_tcp_server import OscTcpServer
-from .service_announcer import QLAB_TCP_PORT, QLabServiceAnnouncer
+from .service_announcer import QLabServiceAnnouncer
 from .settings import QlabMimicSettings
 from .utility import client_id_string, join_path, QlabStatus, split_path
 
 logger = logging.getLogger(__name__) # pylint: disable=invalid-name
 
 QLAB_VERSION = '4.3'
+QLAB_TCP_PORT = 53000
 MESSAGE_RECV_TIMEOUT = 0.1 # seconds
 
 class QlabMimic(Plugin):
@@ -69,7 +70,7 @@ class QlabMimic(Plugin):
         self._server.start()
         self._server.new_message.connect(self._generic_handler)
 
-        self._server_announcer = QLabServiceAnnouncer()
+        self._server_announcer = QLabServiceAnnouncer(QLAB_TCP_PORT)
 
         AppConfigurationDialog.registerSettingsPage(
             'plugins.qlab_mimic', QlabMimicSettings, self.Config)

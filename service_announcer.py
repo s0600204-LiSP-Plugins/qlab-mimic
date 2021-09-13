@@ -32,18 +32,17 @@ from lisp.ui.ui_utils import translate
 
 logger = logging.getLogger(__name__)
 
-QLAB_TCP_PORT = 53000
-
 
 class QLabServiceAnnouncer:
 
     ip_version = IPVersion.V4Only
     service_type = "_qlab._tcp.local."
 
-    def __init__(self):
+    def __init__(self, port):
         self._lock = Lock()
         self._running = False
         self._service = None
+        self._port = port
 
         self._zconf_instance = Zeroconf(
             ip_version=self.ip_version
@@ -56,7 +55,7 @@ class QLabServiceAnnouncer:
             self.service_type,
             f"Linux Show Player.{self.service_type}",
             addresses=[socket.inet_pton(socket.AF_INET, get_lan_ip())],
-            port=QLAB_TCP_PORT
+            port=self._port
         )
 
     @async_function

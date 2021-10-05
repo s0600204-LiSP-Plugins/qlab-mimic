@@ -60,6 +60,9 @@ class CueCart(Cue):
     def name(self):
         return self._layout.view.tabText(self._index)
 
+    def selected_cue(self):
+        return -1
+
     def stop(self, **_):
         self._layout.stop_all()
 
@@ -74,14 +77,17 @@ class CueList(Cue):
     def deinit(self):
         del self._layout
 
+    def selected_cue(self):
+        return self._layout.standby_index()
+
     def standby_cue_id(self):
-        cue_num = self._layout.standby_index()
+        cue_num = self.selected_cue()
         if cue_num == -1:
             return 'none'
         return self._layout.cue_at(cue_num).id
 
     def standby_cue_num(self):
-        cue_num = self._layout.standby_index()
+        cue_num = self.selected_cue()
         if cue_num == -1:
             return 'none'
         return str(cue_num)

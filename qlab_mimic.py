@@ -203,7 +203,7 @@ class QlabMimic(Plugin):
             del path[0:2]
         return_path = join_path(path)
         if path[0] == 'cue':
-            status, data = self._cues_message_handler.by_cue_number(path, args, self.app.cue_model)
+            status, data = self._cues_message_handler.by_cue_number(path, args, self.app.layout)
         else:
             status, data = self._cues_message_handler.by_cue_id(path, args, self.app.cue_model)
         self.send_reply(src, return_path, status, data)

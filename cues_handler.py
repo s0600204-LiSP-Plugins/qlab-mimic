@@ -148,7 +148,7 @@ class CuesHandler:
         del path[0:2]
         return self._cue_common(cue, path, args)
 
-    def by_cue_number(self, path, args, cue_model):
+    def by_cue_number(self, path, args, cue_layout):
         # determine cue based on cue number
         cue = None
         if path[1] == 'L': # ListLayout CueList
@@ -156,7 +156,13 @@ class CuesHandler:
         elif path[1].startsWith('P'): # CartLayout Page
             cue = self.cuelist(int(path[1][1:]) - 1)
         else:
-            cue = cue_model.items[int(path[1]) - 1][1]
+            if path[1] == 'selected':
+                cue_num = self.cuelist(0).selected_cue()
+            else:
+                cue_num = int(path[1]) - 1
+
+            if cue_num > -1:
+                cue = cue_layout.cue_at(cue_num)
 
         if cue is None:
             return (QlabStatus.NotOk, None)

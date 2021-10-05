@@ -235,6 +235,23 @@ class QlabMimic(Plugin):
         cues = self._cues_message_handler.get_currently_playing(True)
         self.send_reply(src, path, QlabStatus.Ok, cues)
 
+    def _handle_selectId(self, path, args, types, src, user_data):
+        '''
+        /workspace/<id>/select_id/<cue_id>
+        '''
+        if not isinstance(self.app.layout, ListLayout):
+            self.send_reply(src, path, QlabStatus.NotOk)
+            return
+
+        cue_id = split_path(path)[3]
+        cue = self.app.layout.cue_model.get(cue_id)
+        if cue is None or cue.index < 0:
+            self.send_reply(src, path, QlabStatus.NotOk)
+            return
+
+        self.app.layout.set_standby_index(cue.index)
+        self.send_reply(src, path, QlabStatus.Ok)
+
     def _handle_selectionIsPlayhead(self, path, args, types, src, user_data):
         if isinstance(self.app.layout, ListLayout):
             if args:
@@ -292,6 +309,7 @@ class QlabMimic(Plugin):
             'go': self._handle_go,
             'runningCues': self._handle_runningCues,
             'runningOrPausedCues': self._handle_runningOrPausedCues,
+            'select_id': self._handle_selectId,
             'selectionIsPlayhead': self._handle_selectionIsPlayhead,
             'showMode': self._handle_showMode,
             'stop': self._handle_stop,

@@ -235,6 +235,10 @@ class QlabMimic(Plugin):
         self.app.layout.pause_all()
         self.send_reply(src, path, QlabStatus.Ok)
 
+    def _handle_resume(self, path, args, types, src, user_data):
+        self.app.layout.resume_all()
+        self.send_reply(src, path, QlabStatus.Ok)
+
     def _handle_runningCues(self, path, args, types, src, user_data):
         self._cues_message_handler.get_currently_playing(False)
         self.send_reply(src, path, QlabStatus.Ok, cues)
@@ -340,6 +344,7 @@ class QlabMimic(Plugin):
             'go': self._handle_go,
             'panic': self._handle_panic,
             'pause': self._handle_pause,
+            'resume': self._handle_resume,
             'runningCues': self._handle_runningCues,
             'runningOrPausedCues': self._handle_runningOrPausedCues,
             'select': self._handle_select,

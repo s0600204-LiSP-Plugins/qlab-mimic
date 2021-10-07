@@ -153,7 +153,7 @@ class CuesHandler:
         cue = None
         if path[1] == 'L': # ListLayout CueList
             cue = self.cuelist(0)
-        elif path[1].startsWith('P'): # CartLayout Page
+        elif path[1].startswith('P'): # CartLayout Page
             cue = self.cuelist(int(path[1][1:]) - 1)
         else:
             if path[1] == 'selected':

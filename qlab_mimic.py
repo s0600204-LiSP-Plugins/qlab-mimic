@@ -143,10 +143,16 @@ class QlabMimic(Plugin):
     def send_update(self, path, args=[], always_send=False):
         path[0:0] = ['update', 'workspace', self._session_uuid]
         path = join_path(path)
-        for client in self._connected_clients.values():
+        to_prune = []
+        for client_id, client in self._connected_clients.items():
             if client[1] or always_send:
                 client[0].set_slip_enabled(True)
-                self._server.send(client[0], path, *args)
+                if not self._server.send(client[0], path, *args):
+                    to_prune.append(client_id)
+
+        for client_id in to_prune:
+            logger.debug(f"Unable to update client at '{client_id}'. Removing from list of connected clients.")
+            del self._connected_clients[client_id]
 
     def _generic_handler(self, original_path, args, types, src, user_data):
         if (src.url in self._last_messages

@@ -101,8 +101,9 @@ class OscTcpServer:
 
     def send(self, address, path, *args):
         if not address.hostname:
-            return
+            return False
 
         with self._lock:
             if self._running:
                 self._srv.send(address, path, *args)
+        return True

@@ -215,6 +215,7 @@ class CuesHandler:
             'currentCueTarget': lambda: self._get_cue_target(cue),
             'defaultName': lambda: translate('CueName', cue.Name),
             'displayName': lambda: cue.name,
+            'duration': lambda: cue.duration / 1000,
             'fileTarget': lambda: None if cue.type != 'GstMediaCue' else cue.input_uri, # @todo check the appropriate property
             'flagged': lambda: False,
             'hasCueTargets': lambda: cue.type in TARGETS_OTHER_CUES,

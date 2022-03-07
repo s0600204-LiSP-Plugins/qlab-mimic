@@ -25,6 +25,8 @@ import logging
 import time
 from uuid import uuid4
 
+from liblo import SLIP_DOUBLE
+
 # pylint: disable=import-error
 from lisp.core.plugin import Plugin
 from lisp.core.util import get_lan_ip
@@ -128,7 +130,7 @@ class QlabMimic(Plugin):
         client_id = client_id_string(src)
         if data is None and (client_id not in self._connected_clients or not self._connected_clients[client_id][2]):
             return
-        src.set_slip_enabled(True)
+        src.set_slip_enabled(SLIP_DOUBLE)
         response = {
             'address': path,
             'status': status.value,
@@ -146,7 +148,7 @@ class QlabMimic(Plugin):
         to_prune = []
         for client_id, client in self._connected_clients.items():
             if client[1] or always_send:
-                client[0].set_slip_enabled(True)
+                client[0].set_slip_enabled(SLIP_DOUBLE)
                 if not self._server.send(client[0], path, *args):
                     to_prune.append(client_id)
 

@@ -22,6 +22,16 @@
 
 # pylint: disable=missing-docstring, invalid-name, too-few-public-methods
 
+"""
+Whilst there are some minor differences, cue layouts within QLab are functionally the same as
+QLab's "Group" cue-type, and are handled similarly.
+
+In LiSP cue layouts contain cues, but are not analogous to cues.
+
+The classes in the file map LiSP's cue layouts to our implementention of QLab's OSC api,
+allowing the layouts to be interacted with via the same commands as normal cues.
+"""
+
 # pylint: disable=import-error
 from lisp.cues.cue import Cue
 from lisp.ui.ui_utils import translate

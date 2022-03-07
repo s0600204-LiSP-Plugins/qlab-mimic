@@ -21,7 +21,7 @@
 # along with Linux Show Player.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-Whilst LiSP can display it's cues using any colour of the rainbow, QLab cannot. Instead, it has
+Whilst LiSP can display its cues using any colour of the rainbow, QLab cannot. Instead, it has
 a palette of (no doubt carefully chosen) colours that users may choose from.
 
 Thus, we need to map a user's arbitrary cue colour choice to one contained within QLab's

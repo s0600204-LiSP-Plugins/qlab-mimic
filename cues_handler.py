@@ -141,7 +141,7 @@ class CuesHandler:
         return cuelists
 
     def by_cue_id(self, path, args, cue_model):
-        # determine cue based on cue id
+        # Determine cue based on cue id
         cue = self._cuelists.get(path[1]) or cue_model.get(path[1])
         if cue is None:
             return (QlabStatus.NotOk, None)
@@ -149,7 +149,7 @@ class CuesHandler:
         return self._cue_common(cue, path, args)
 
     def by_cue_number(self, path, args, cue_layout):
-        # determine cue based on cue number
+        # Determine cue based on cue number
         cue = None
         if path[1] == 'L': # ListLayout CueList
             cue = self.cuelist(0)

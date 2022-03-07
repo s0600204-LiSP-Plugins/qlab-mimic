@@ -28,8 +28,8 @@ from lisp.ui.ui_utils import translate
 
 class CueCart(Cue):
 
-    def __init__(self, layout, index, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, layout, index, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         # `self.index` (inherited Property) is presented to Remote Apps (as the "cue number");
         # `self._index` is used internally within LiSP
@@ -68,8 +68,8 @@ class CueCart(Cue):
 
 class CueList(Cue):
 
-    def __init__(self, layout, **kwargs):
-        super().__init__(**kwargs)
+    def __init__(self, layout, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.name = translate('CueName', 'Main Cue List')
         self.index = 'L'
         self._layout = layout

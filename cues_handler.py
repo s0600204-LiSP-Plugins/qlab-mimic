@@ -94,7 +94,7 @@ class CuesHandler:
         if isinstance(session_layout, ListLayout):
             # LiSP doesn't support multiple cue lists in List Layout
             # Thus, we create a single object encapsulating all cues
-            self._cuelists.add(CueList(session_layout))
+            self._cuelists.add(CueList(session_layout, self._plugin.app))
 
         elif isinstance(session_layout, CartLayout):
             session_layout.page_added.connect(self._on_cartpage_added)
@@ -112,7 +112,7 @@ class CuesHandler:
         self._cuelists.reset()
 
     def _on_cartpage_added(self, page_index, _):
-        self._cuelists.add(CueCart(self._session_layout, page_index))
+        self._cuelists.add(CueCart(self._session_layout, page_index, self._plugin.app))
         self._plugin.emit_workspace_updated()
 
     def _on_cartpage_removed(self, page_index):

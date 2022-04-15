@@ -88,6 +88,8 @@ CUE_NEXT_ACTION_MAPPING = {
 
 class CuesHandler:
 
+    CueTypesAliasingPrompted = []
+
     def __init__(self, plugin):
         self._cuelists = CueModel()
         self._plugin = plugin
@@ -389,7 +391,9 @@ class CuesHandler:
     def _derive_qlab_cuetype(self, cue):
         cue_type = CUE_TYPE_MAPPING.get(cue.type, None)
         if cue_type is None:
-            logger.debug('Cue type {} needs aliasing!'.format(cue.type))
+            if cue.type not in self.CueTypesAliasingPrompted:
+                logger.debug('Cue type {} needs aliasing!'.format(cue.type))
+                self.CueTypesAliasingPrompted.append(cue.type)
             cue_type = 'script'
         return cue_type
 

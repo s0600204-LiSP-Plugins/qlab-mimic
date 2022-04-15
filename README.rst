@@ -73,9 +73,9 @@ Incompatible apps
                workspaces, nor does it handle disconnect notifications from QLab
                or LiSP.
 
-  .. note:: This app is not Open Source, however the project developer's website
-            states that the underlying (.NET) toolkit is available on GitHub. If
-            it is, it's not within a public repository.
+  .. note:: This app is not Open Source, however the underlying toolkit (a work
+            in progress port to ``.NET`` of the official ``ObjC`` toolkit) *is*,
+            and can be found at https://github.com/jwetzell/QControlKit.
 
   .. note:: This app is confused:
 
@@ -145,7 +145,7 @@ Dependencies
   Linux, you may need to remove your distribution's package first.
 
 **python-zeroconf**
-  Installable from pypi: https://pypi.org/project/zeroconf/, or from GitHub:
+  Installable from PyPI_: https://pypi.org/project/zeroconf/, or from GitHub:
   https://github.com/jstasiak/python-zeroconf. Your distribution might also have
   a suitable package in its repositories.
 
@@ -173,3 +173,4 @@ automatically.
 .. _MiniStatus: https://apps.apple.com/gb/app/ministatus/id1510960205
 .. _liblo: https://github.com/radarsat1/liblo
 .. _pyliblo: https://github.com/dsacre/pyliblo
+.. _PyPI: https://pypi.org

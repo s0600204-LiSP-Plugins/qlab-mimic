@@ -382,7 +382,7 @@ class QlabMimic(Plugin):
         workspaces = [{
             'uniqueID': self._session_uuid,
             'displayName': self._session_name,
-            'hasPasscode': 0,
+            'hasPasscode': False,
             'version': QLAB_VERSION,
         }]
 

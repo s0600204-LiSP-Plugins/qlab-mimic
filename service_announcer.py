@@ -53,7 +53,7 @@ class QLabServiceAnnouncer:
     def build_service(self):
         self._service = ServiceInfo(
             self.service_type,
-            f"Linux Show Player.{self.service_type}",
+            f"{socket.getfqdn(get_lan_ip())} [Linux Show Player].{self.service_type}",
             addresses=[socket.inet_pton(socket.AF_INET, get_lan_ip())],
             port=self._port
         )

@@ -53,20 +53,25 @@ TARGETS_OTHER_CUES = ['CollectionCue', 'IndexActionCue', 'SeekCue', 'VolumeContr
 #   devamp, goto, target, arm, disarm, wait, memo, script, list,
 #   cuelist, cue list, cart, cuecart, or cue cart
 CUE_TYPE_MAPPING = {
+    # LiSP Base Install
     'CollectionCue': None,
     'CommandCue': None,
     'CueCart': 'Cart',
     'CueList': 'Cue List',
-    #'DcaAssignCue': None,
-    #'DcaResetCue': None,
-    #'FixtureControlCue': None,
     'GstMediaCue': 'audio',
     'IndexActionCue': None,
     'MidiCue': 'midi',
     'OscCue': 'network',
     'SeekCue': None,
-    'StopAll': None,
+    'StopAll': 'stop',
     'VolumeControl': 'fade',
+
+    # MIDI Fixture Control plugin
+    'FixtureControlCue': None,
+
+    # DCA Plotter plugin
+    'DcaAssignCue': None,
+    'DcaResetCue': None,
 }
 
 # QLab values:

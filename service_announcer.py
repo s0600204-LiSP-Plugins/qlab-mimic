@@ -51,7 +51,7 @@ class QLabServiceAnnouncer:
         self.build_service()
 
     def build_service(self):
-        service_name = socket.getfqdn(get_lan_ip()).split('.')[0]
+        service_name = socket.gethostname()
         self._service = ServiceInfo(
             self.service_type,
             f"{service_name} (Linux Show Player).{self.service_type}",

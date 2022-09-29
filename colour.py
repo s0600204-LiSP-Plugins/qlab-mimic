@@ -56,90 +56,126 @@ Links:
 #
 # Note: We don't provide a value for QLab colour 'none', as that's unnecessary - if a user
 #       hasn't set (or has cleared) a colour in LiSP, then `find_nearest_colour()` isn't called.
-AVOCADO      = ((103, 146,   0), 'avocado')
-BASTARDAMBER = ((255, 210, 193), 'bastardamber')
-BISQUE       = ((255, 233, 207), 'bisque')
-BLUE         = (( 82, 115, 224), 'blue')
-CELADON      = ((185, 229, 189), 'celadon')
-CERULEAN     = ((  0, 142, 182), 'cerulean')
-CHARTREUSE   = ((228, 251,   0), 'chartreuse')
-CORAL        = ((255, 147,  97), 'coral')
-ECRU         = ((206, 190, 146), 'ecru')
-FUCHSIA      = ((255, 101, 255), 'fuchsia')
-FULVOUS      = ((235, 151,   0), 'fulvous')
-GLAUCOUS     = ((113, 146, 192), 'glaucous')
-GREEN        = ((  0, 209,  46), 'green')
-GREY         = ((160, 156, 169), 'grey')
-INDIGO       = ((110, 106, 169), 'indigo')
-LILAC        = ((206, 176, 206), 'lilac')
-MAIZE        = ((249, 234, 111), 'maize')
-MAUVE        = ((231, 193, 255), 'mauve')
-OCHRE        = ((215, 138,  44), 'ochre')
-OLIVE        = ((146, 144,   0), 'olive')
-ORANGE       = ((255, 166,   0), 'orange')
-PUCE         = ((215, 155, 169), 'puce')
-PURPLE       = ((169,  43, 192), 'purple')
-RED          = ((255,  76,  66), 'red')
-RUFOUS       = ((185,  46,   2), 'rufous')
-SAGE         = ((200, 195, 156), 'sage')
-SCARLET      = ((255,  65,  68), 'scarlet')
-SEAFOAMGREEN = ((205, 230, 202), 'seafoamgreen')
-SKYBLUE      = ((151, 216, 239), 'skyblue')
-TAUPE        = ((192, 156, 127), 'taupe')
-VERDIGRIS    = (( 81, 190, 188), 'verdigris')
-VERMILION    = ((235,  91,  67), 'vermilion')
-VIRIDIAN     = (( 80, 146, 127), 'viridian')
-YELLOW       = ((249, 231,  30), 'yellow')
+AVOCADO      = (( 85, 130,   1), 'avocado')
+BASTARDAMBER = ((255, 200, 180), 'bastardamber')
+BISQUE       = ((255, 229, 196), 'bisque')
+BLUE         = (( 65,  90, 218), 'blue')
+CELADON      = ((171, 225, 175), 'celadon')
+CERULEAN     = ((  0, 123, 167), 'cerulean')
+CHARTREUSE   = ((223, 254,   0), 'chartreuse')
+CHESTNUT     = (( 90,  37,   6), 'chestnut')
+CHOCOLATE    = (( 87,  51,  37), 'chocolate')
+CORAL        = ((254, 126,  79), 'coral')
+ECRU         = ((194, 178, 129), 'ecru')
+FOREST       = (( 16,  83,  29), 'forest')
+FUCHSIA      = ((255,  64, 255), 'fuchsia')
+FULVOUS      = ((227, 133,   0), 'fulvous')
+GLAUCOUS     = (( 94, 127, 178), 'glaucous')
+GREEN        = ((  1, 204,  34), 'green')
+GREY         = ((143, 138, 153), 'grey')
+HOTPINK      = ((255,   0, 156), 'hotpink')
+INDIGO       = (( 90,  85, 153), 'indigo')
+LILAC        = ((194, 158, 194), 'lilac')
+MAIZE        = ((248, 233,  92), 'maize')
+MARIGOLD     = ((255, 161,   9), 'marigold')
+MAUVE        = ((223, 176, 255), 'mauve')
+OCHRE        = ((204, 120,  34), 'ochre')
+OLIVE        = ((127, 128,   0), 'olive')
+ORANGE       = ((255, 149,   1), 'orange')
+PEACH        = ((254, 175, 134), 'peach')
+PERIWINKLE   = ((120, 106, 255), 'periwinkle')
+PLUM         = (( 59,   0,  64), 'plum')
+PUCE         = ((204, 135, 153), 'puce')
+PURPLE       = ((149,   0, 179), 'purple')
+RED          = ((253,  54,  59), 'red')
+RUFOUS       = ((168,  27,   7), 'rufous')
+SAGE         = ((188, 184, 137), 'sage')
+SCARLET      = ((253,  38,  53), 'scarlet')
+SEAFOAMGREEN = ((195, 227, 190), 'seafoamgreen')
+SKYBLUE      = ((142, 138, 153), 'skyblue')
+TAUPE        = ((178, 139, 108), 'taupe')
+VERDIGRIS    = (( 68, 179, 173), 'verdigris')
+VERMILION    = ((227,  67,  53), 'vermilion')
+VIOLET       = ((149,   0, 179), 'violet')
+VIRIDIAN     = (( 65, 128, 107), 'viridian')
+YELLOW       = ((247, 229,  25), 'yellow')
 
 # For each level, sort by axis
 # r -> g -> b -> r -> [...]
-TREE = (SEAFOAMGREEN,
-    (VIRIDIAN,
-        (INDIGO,
-            (OLIVE,
-                (AVOCADO, None, None),
-                (RUFOUS, None, None)
+TREE = (SAGE,
+    (CERULEAN,
+        (PLUM,
+            (CHOCOLATE,
+                (FOREST, None, None),
+                (RUFOUS,
+                    None,
+                    (CHESTNUT, None, None)
+                )
             ),
-            (BLUE,
-                (CERULEAN, None, None),
-                (PURPLE, None, None)
+            (PERIWINKLE,
+                (INDIGO,
+                    None,
+                    (BLUE, None, None)
+                ),
+                (PURPLE,
+                    None,
+                    (VIOLET, None, None)
+                )
             )
         ),
-        (GREY,
-            (TAUPE,
+        (TAUPE,
+            (VIRIDIAN,
                 (GREEN, None, None),
-                (SAGE, None, None)
+                (OLIVE,
+                    None,
+                    (AVOCADO, None, None)
+                )
             ),
-            (GLAUCOUS,
-                (VERDIGRIS, None, None),
-                (SKYBLUE,
+            (SKYBLUE,
+                (GLAUCOUS,
+                    None,
+                    (VERDIGRIS, None, None)
+                ),
+                (GREY,
                     None,
                     (CELADON, None, None)
                 )
             )
         )
     ),
-    (ORANGE,
+    (LILAC,
         (VERMILION,
             (FULVOUS,
                 (OCHRE, None, None),
-                (RED, None, None)
-            ),
-            (SCARLET,
-                (PUCE, None, None),
-                (FUCHSIA,
+                (SCARLET,
                     None,
-                    (CORAL, None, None)
+                    (ORANGE, None, None)
+                )
+            ),
+            (CORAL,
+                (RED,
+                    None,
+                    (PUCE, None, None)
+                ),
+                (HOTPINK,
+                    None,
+                    (FUCHSIA, None, None)
                 )
             )
         ),
         (ECRU,
             (YELLOW,
                 (CHARTREUSE, None, None),
-                (MAIZE, None, None)
+                (MARIGOLD,
+                    None,
+                    (MAIZE, None, None)
+                )
             ),
-            (MAUVE,
-                (LILAC, None, None),
+            (PEACH,
+                (MAUVE,
+                    None,
+                    (SEAFOAMGREEN, None, None)
+                ),
                 (BASTARDAMBER,
                     None,
                     (BISQUE, None, None)

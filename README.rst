@@ -47,22 +47,15 @@ The following apps are known about and work with the **QLab OSC Mimic** plugin
   .. note:: As LiSP doesn't currently output the visual component of video files
             it plays, there's no real point to using this with LiSP.
 
-Incompatible apps
-'''''''''''''''''
-
-`Q GO`_
-  (iOS / iPadOS)
-
-  A free (but not Open Source) app designed to be used with QLab versions 2 and
-  3. As such it uses MIDI to control QLab, not OSC. (And communication is
-  one-way.)
-
 `qControl`_
   (iOS / Android)
 
   A free (but not Open Source) app with a limited interface. Could be useful as
   a "GO" button for calling cues from a cue stack.
-  
+
+  The reliability of this app is questionable: even when running with an actual
+  copy of QLab it only sometimes works - other times it just fails to connect.
+
   .. note:: This app does not support Carts.
 
   .. note:: It is not possible for this app to discover LiSP shows available:
@@ -85,9 +78,18 @@ Incompatible apps
             Second, it requires all OSC messages it *receives* to be "double END
             SLIP" encoded, but doesn't *send* OSC messages encoded this way.
 
-  .. warning:: The app's menus are unreadable on iPadOS.
-
   .. note:: I have only tested on iPadOS.
+
+
+Incompatible apps
+'''''''''''''''''
+
+`Q GO`_
+  (iOS / iPadOS)
+
+  A free (but not Open Source) app designed to be used with QLab versions 2 and
+  3. As such it uses MIDI to control QLab, not OSC. (And communication is
+  one-way.)
 
 `MiniStatus`_
   (iOS / iPadOS)

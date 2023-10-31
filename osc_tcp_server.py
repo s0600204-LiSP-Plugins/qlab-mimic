@@ -105,5 +105,10 @@ class OscTcpServer:
 
         with self._lock:
             if self._running:
-                self._srv.send(address, path, *args)
+                try:
+                    self._srv.send(address, path, *args)
+                except OSError: # "Broken Pipe"
+                    # It appears we can ignore this, as subsequent messages still get sent,
+                    # but not catching it causes LiSP to crash to desktop.
+                    logger.warning(f"Hiccup in connection when sending message.")
         return True

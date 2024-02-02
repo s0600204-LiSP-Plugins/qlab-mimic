@@ -1,0 +1,24 @@
+Source: qlab-mimic
+Section: sound
+Priority: optional
+Maintainer: s0600204 <dev@s0600204>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13)
+Standards-Version: 4.6.2
+Homepage: https://github.com/s0600204-lisp-plugins/qlab-mimic.git
+
+Package: linux-show-player-qlab-mimic
+Architecture: all
+Depends:
+ ${misc:Depends},
+ python3-liblo,
+ python3-zeroconf
+Suggests:
+ linux-show-player
+Description: QLab Mimic
+ This plugin causes LiSP to respond to some of the same OSC messages that 
+ allow remote control of QLab.
+ .
+ This idea is that this should allow the use of mobile-device apps designed
+ for the purpose of remote controlling QLab to also control LiSP.

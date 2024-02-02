@@ -51,7 +51,6 @@ class QlabMimic(Plugin):
 
     Name = 'QLab Mimic'
     Authors = ('s0600204',)
-    Depends = ('Osc',)
     Description = 'LiSP pretends to be QLab for the purposes of basic OSC control.'
 
     def __init__(self, app):
